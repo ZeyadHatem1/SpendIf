@@ -4,7 +4,7 @@ import './App.css'; // optional for styling
 
 function App() {
   return (
-    <>
+    <div style={styles.wrapper}>
       <nav style={styles.navbar}>
         <ul style={styles.navList}>
           <li><a href="#" style={styles.link}>Dashboard</a></li>
@@ -15,16 +15,31 @@ function App() {
         </ul>
       </nav>
 
-      <main style={styles.main}>
-        <u><h1>Welcome to SpendIf</h1></u>
-        <h2>Your own financial tracker</h2>
-        {/* Your other components can go here */}
-      </main>
-    </>
+      <div style={styles.content}>
+        <main style={styles.main}>
+          <u><h1>Welcome to SpendIf</h1></u>
+          <h2>Your own financial tracker</h2>
+          {/* Your other components can go here */}
+        </main>
+        <footer style={styles.footer}>
+          <p>&copy; 2025 SpendIf. All rights reserved.</p>
+        </footer>
+      </div>
+    </div>
   );
 }
 
 const styles = {
+  wrapper: {
+    display: 'flex',
+    minHeight: '100vh',
+  },
+  content: {
+    display: 'flex',
+    flexDirection: 'column',
+    flexGrow: 1,
+    marginLeft: '220px',
+  },
   navbar: {
     backgroundColor: '#fbfafaff',
     padding: '2rem 1rem',
@@ -50,8 +65,13 @@ const styles = {
     fontWeight: 'bold',
   },
   main: {
-    marginLeft: '220px',
     padding: '2rem',
+    flex: 1,
+  },
+  footer: {
+    textAlign: 'center',
+    padding: '1rem',
+    backgroundColor: '#f1f1f1',
   }
 };
 
