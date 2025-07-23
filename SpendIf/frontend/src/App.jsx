@@ -11,12 +11,13 @@ function App() {
           <li><a href="#">Upload</a></li>
           <li><a href="#">Analytics</a></li>
           <li><a href="#">Security</a></li>
-          <li><a href="#">Admin</a></li>
+          <li><a href="#">Statistics</a></li>
         </ul>
       </nav>
 
       <main>
-        <h1>Welcome to SpendIf</h1>
+        <u><h1>Welcome to SpendIf</h1></u>
+        <h2>Your own financial tracker</h2>
         {/* Your other components can go here */}
       </main>
     </>
@@ -25,7 +26,7 @@ function App() {
 
 const styles = {
   navbar: {
-    backgroundColor: '#1e1e1e',
+    backgroundColor: '#fbfafaff',
     padding: '1rem 2rem',
   },
   navList: {
