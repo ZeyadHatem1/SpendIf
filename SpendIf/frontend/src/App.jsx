@@ -7,15 +7,15 @@ function App() {
     <>
       <nav style={styles.navbar}>
         <ul style={styles.navList}>
-          <li><a href="#">Dashboard</a></li>
-          <li><a href="#">Upload</a></li>
-          <li><a href="#">Analytics</a></li>
-          <li><a href="#">Security</a></li>
-          <li><a href="#">Statistics</a></li>
+          <li><a href="#" style={styles.link}>Dashboard</a></li>
+          <li><a href="#" style={styles.link}>Upload</a></li>
+          <li><a href="#" style={styles.link}>Analytics</a></li>
+          <li><a href="#" style={styles.link}>Security</a></li>
+          <li><a href="#" style={styles.link}>Statistics</a></li>
         </ul>
       </nav>
 
-      <main>
+      <main style={styles.main}>
         <u><h1>Welcome to SpendIf</h1></u>
         <h2>Your own financial tracker</h2>
         {/* Your other components can go here */}
@@ -27,15 +27,31 @@ function App() {
 const styles = {
   navbar: {
     backgroundColor: '#fbfafaff',
-    padding: '1rem 2rem',
+    padding: '2rem 1rem',
+    height: '100vh',
+    width: '200px',
+    position: 'fixed',
+    top: 0,
+    left: 0,
+    display: 'flex',
+    flexDirection: 'column',
   },
   navList: {
     listStyle: 'none',
     display: 'flex',
-    gap: '2rem',
+    flexDirection: 'column',
+    gap: '1.5rem',
     margin: 0,
     padding: 0,
-    color: 'white',
+  },
+  link: {
+    color: 'black',
+    textDecoration: 'none',
+    fontWeight: 'bold',
+  },
+  main: {
+    marginLeft: '220px',
+    padding: '2rem',
   }
 };
 
