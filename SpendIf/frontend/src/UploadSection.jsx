@@ -1,26 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { FiUpload } from "react-icons/fi";
 
 const UploadSection = ({ handleFileUpload }) => {
   return (
     <div style={styles.container}>
-      <div style={styles.card}>
+      <HoverCard>
         <h2 style={styles.title}>Upload CSV File</h2>
         <p style={styles.subtitle}>
           Drag and drop your CSV file or click to select.
         </p>
         <label htmlFor="file-upload" style={styles.uploadBox}>
           <div style={styles.uploadIcon}><FiUpload size={32} /></div>
-          <p>Drop your CSV file here<br /><small>or click to browse files</small></p>
-          <input id="file-upload" type="file" accept=".csv" onChange={handleFileUpload} style={{ display: "none" }} />
+          <p>
+            Drop your CSV file here<br />
+            <small>or click to browse files</small>
+          </p>
+          <input
+            id="file-upload"
+            type="file"
+            accept=".csv"
+            onChange={handleFileUpload}
+            style={{ display: "none" }}
+          />
         </label>
-      </div>
+      </HoverCard>
 
-      <div style={styles.card}>
+      <HoverCard>
         <h2 style={styles.title}>CSV Format Guide</h2>
         <p style={styles.subtitle}>Follow this format for successful imports</p>
         <div style={styles.tags}>
-          {["date", "merchant", "amount", "category"].map((tag) => (
+          {["date", "description", "deposit", "withdrawal", "balance"].map((tag) => (
             <span key={tag} style={styles.tag}>{tag}</span>
           ))}
         </div>
@@ -31,7 +40,28 @@ const UploadSection = ({ handleFileUpload }) => {
           <li><b>Withdrawals:</b> Amount</li>
           <li><b>Balance:</b> Amount</li>
         </ul>
-      </div>
+      </HoverCard>
+    </div>
+  );
+};
+
+// Card wrapper with hover effect
+const HoverCard = ({ children }) => {
+  const [hover, setHover] = useState(false);
+
+  return (
+    <div
+      style={{
+        ...styles.card,
+        ...(hover && {
+          transform: "translateY(-4px)",
+          boxShadow: "0 6px 16px rgba(0, 0, 0, 0.15)",
+        }),
+      }}
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      {children}
     </div>
   );
 };
@@ -43,8 +73,8 @@ const styles = {
     gap: "2rem",
     marginBottom: "2rem",
     justifyContent: "center",
-    alignItems: "flex-start",
-    maxWidth: "1200px",   // Added max width to let it fill wider area
+    alignItems: "stretch",
+    maxWidth: "1200px",
     marginLeft: "auto",
     marginRight: "auto",
   },
@@ -53,8 +83,11 @@ const styles = {
     borderRadius: "0.5rem",
     padding: "1.5rem",
     boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-    flex: "0 0 48%",      // fixed basis to 48% so both are equal width and take most of the container
-    minWidth: "300px",
+    flex: "1 1 50%",
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    transition: "all 0.2s ease-in-out",
   },
   title: {
     fontSize: "1.25rem",

@@ -21,15 +21,14 @@ import {
   PieChart,
   Pie,
   Cell,
-  Legend,
 } from "recharts";
-import UploadSection from "./UploadSection"; // ✅ Import UploadSection
+import UploadSection from "./UploadSection";
+import Analytics from "./Analytics"; // ✅ Already imported
 
 const navItems = [
   { name: "Dashboard", icon: <FiHome /> },
   { name: "Upload", icon: <FiUpload /> },
   { name: "Analytics", icon: <FiTrendingUp /> },
-  { name: "Security", icon: <FiShield /> },
   { name: "Statistics", icon: <FiBarChart2 /> },
 ];
 
@@ -126,9 +125,7 @@ function App() {
                   style={{
                     ...styles.navItem,
                     ...(activeTab === item.name ? styles.activeNavItem : {}),
-                    ...(hoveredItem === item.name && activeTab !== item.name && {
-                      backgroundColor: "#f0f0f0",
-                    }),
+                    ...(hoveredItem === item.name && activeTab !== item.name && styles.hoveredNavItem),
                   }}
                 >
                   <span style={styles.icon}>{item.icon}</span>
@@ -147,10 +144,9 @@ function App() {
         <main style={styles.main}>
           <h1>{activeTab}</h1>
 
-          {/* ✅ Upload tab with UploadSection component */}
           {activeTab === "Upload" && <UploadSection handleFileUpload={handleFileUpload} />}
+          {activeTab === "Analytics" && <Analytics data={data} />} {/* ✅ CHANGED LINE */}
 
-          {/* ✅ Dashboard tab remains unchanged */}
           {activeTab === "Dashboard" && (
             <>
               <label style={styles.uploadBtn}>
@@ -217,15 +213,25 @@ function App() {
 }
 
 function Card({ title, value, subtitle, color }) {
+  const [hover, setHover] = useState(false);
+
   return (
-    <div style={{
-      background: "#fff",
-      padding: "1rem",
-      borderRadius: "0.5rem",
-      flex: 1,
-      minWidth: "220px",
-      boxShadow: "0 1px 2px rgba(0,0,0,0.1)",
-    }}>
+    <div
+      onMouseEnter={() => setHover(true)}
+      onMouseLeave={() => setHover(false)}
+      style={{
+        background: "#fff",
+        padding: "1rem",
+        borderRadius: "0.5rem",
+        flex: 1,
+        minWidth: "220px",
+        boxShadow: hover
+          ? "0 4px 12px rgba(0, 0, 0, 0.1)"
+          : "0 1px 2px rgba(0,0,0,0.1)",
+        transform: hover ? "translateY(-4px)" : "none",
+        transition: "all 0.2s ease-in-out",
+      }}
+    >
       <p style={{ fontWeight: 600 }}>{title}</p>
       <h2 style={{ color: color === "green" ? "#10B981" : color === "red" ? "#EF4444" : "#F59E0B" }}>{value}</h2>
       <p style={{ color: "#6B7280", fontSize: "0.875rem" }}>{subtitle}</p>
@@ -241,10 +247,11 @@ const styles = {
   navList: { listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem" },
   navItem: { display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.75rem 1rem", borderRadius: "0.5rem", cursor: "pointer", color: "#4B5563", fontWeight: 500, transition: "background-color 0.2s ease" },
   activeNavItem: { backgroundColor: "#0369A1", color: "#ffffff" },
+  hoveredNavItem: { backgroundColor: "#f0f0f0" },
   icon: { fontSize: "1.2rem" },
   pageContent: { marginLeft: "220px", flexGrow: 1, display: "flex", flexDirection: "column" },
   main: { flex: 1, padding: "2rem" },
-  footer: { textAlign: "center", padding: "1rem", backgroundColor: "#f1f1f1" },
+  footer: { textAlign: "center",},
   uploadBtn: { display: "inline-flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#0284C7", color: "#fff", padding: "0.5rem 1rem", borderRadius: "0.375rem", cursor: "pointer", marginBottom: "1.5rem" },
 };
 
