@@ -23,21 +23,31 @@ import {
   Cell,
 } from "recharts";
 import UploadSection from "./UploadSection";
-import Analytics from "./Analytics"; // ✅ Already imported
+import Analytics from "./Analytics";
+import Statistics from "./Statistics";  // <-- Import Statistics here
 
 const navItems = [
   { name: "Dashboard", icon: <FiHome /> },
   { name: "Upload", icon: <FiUpload /> },
   { name: "Analytics", icon: <FiTrendingUp /> },
-  { name: "Statistics", icon: <FiBarChart2 /> },
+  { name: "Statistics", icon: <FiBarChart2 /> },  // Your new tab
 ];
 
 const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#6366F1"];
 
+// ✅ Sample data to display before upload
+const sampleData = [
+  { date: "2025-01-05", month: "Jan", deposit: 2000, withdrawal: 500, balance: 1500, category: "Food" },
+  { date: "2025-02-10", month: "Feb", deposit: 2500, withdrawal: 800, balance: 3200, category: "Rent" },
+  { date: "2025-03-15", month: "Mar", deposit: 1800, withdrawal: 600, balance: 4400, category: "Entertainment" },
+  { date: "2025-04-12", month: "Apr", deposit: 2200, withdrawal: 700, balance: 5900, category: "Shopping" },
+  { date: "2025-05-20", month: "May", deposit: 2100, withdrawal: 900, balance: 7100, category: "Transport" },
+];
+
 function App() {
   const [activeTab, setActiveTab] = useState("Dashboard");
   const [showNavbar, setShowNavbar] = useState(false);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(sampleData); // ✅ Start with sample data
   const [hoveredItem, setHoveredItem] = useState(null);
 
   const handleFileUpload = (event) => {
@@ -66,7 +76,7 @@ function App() {
         };
       });
 
-      setData(parsed);
+      setData(parsed); // ✅ Replace sample with uploaded data
     };
     reader.readAsText(file);
   };
@@ -75,22 +85,22 @@ function App() {
   const monthlyIncome = data.reduce((acc, t) => acc + t.deposit, 0);
   const monthlyExpenses = data.reduce((acc, t) => acc + t.withdrawal, 0);
 
-  const categoryData = Object.values(
-    data.reduce((acc, { category, withdrawal }) => {
-      if (!acc[category]) acc[category] = { name: category, value: 0 };
-      acc[category].value += withdrawal;
-      return acc;
-    }, {})
-  )
-    .sort((a, b) => b.value - a.value)
-    .slice(0, 5);
-
-  const otherValue = data.reduce((acc, { category, withdrawal }) => {
-    if (!categoryData.find(c => c.name === category)) acc += withdrawal;
-    return acc;
-  }, 0);
-
-  if (otherValue > 0) categoryData.push({ name: "Other", value: otherValue });
+  // ✅ Categorize into Food, Entertainment, and Other
+  const categoryTotals = { Food: 0, Entertainment: 0, Other: 0 };
+  data.forEach(({ category, withdrawal }) => {
+    if (!withdrawal) return;
+    const cat = category?.toLowerCase();
+    if (cat?.includes("food") || cat?.includes("grocer")) {
+      categoryTotals.Food += withdrawal;
+    } else if (cat?.includes("entertain") || cat?.includes("movie") || cat?.includes("game")) {
+      categoryTotals.Entertainment += withdrawal;
+    } else {
+      categoryTotals.Other += withdrawal;
+    }
+  });
+  const categoryData = Object.entries(categoryTotals)
+    .map(([name, value]) => ({ name, value }))
+    .filter(c => c.value > 0);
 
   const spendingTrend = Object.values(
     data.reduce((acc, t) => {
@@ -99,7 +109,7 @@ function App() {
       acc[t.month].expenses += t.withdrawal;
       return acc;
     }, {})
-  ).sort((a, b) => new Date(`2024-${a.month}-01`) - new Date(`2024-${b.month}-01`));
+  ).sort((a, b) => new Date(`2025-${a.month}-01`) - new Date(`2025-${b.month}-01`));
 
   return (
     <div style={styles.wrapper}>
@@ -145,7 +155,8 @@ function App() {
           <h1>{activeTab}</h1>
 
           {activeTab === "Upload" && <UploadSection handleFileUpload={handleFileUpload} />}
-          {activeTab === "Analytics" && <Analytics data={data} />} {/* ✅ CHANGED LINE */}
+          {activeTab === "Analytics" && <Analytics data={data} />}
+          {activeTab === "Statistics" && <Statistics data={data} />}  {/* <-- Added this */}
 
           {activeTab === "Dashboard" && (
             <>
@@ -251,7 +262,7 @@ const styles = {
   icon: { fontSize: "1.2rem" },
   pageContent: { marginLeft: "220px", flexGrow: 1, display: "flex", flexDirection: "column" },
   main: { flex: 1, padding: "2rem" },
-  footer: { textAlign: "center",},
+  footer: { textAlign: "center" },
   uploadBtn: { display: "inline-flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#0284C7", color: "#fff", padding: "0.5rem 1rem", borderRadius: "0.375rem", cursor: "pointer", marginBottom: "1.5rem" },
 };
 
