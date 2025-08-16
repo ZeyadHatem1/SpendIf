@@ -35,7 +35,6 @@ const navItems = [
 
 const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#6366F1"];
 
-// ✅ Sample data to display before upload
 const sampleData = [
   { date: "2025-01-05", month: "Jan", deposit: 2000, withdrawal: 500, balance: 1500, category: "Food" },
   { date: "2025-02-10", month: "Feb", deposit: 2500, withdrawal: 800, balance: 3200, category: "Rent" },
@@ -50,6 +49,109 @@ function App() {
   const [data, setData] = useState(sampleData); // ✅ Start with sample data
   const [hoveredItem, setHoveredItem] = useState(null);
 
+  // --- Helper utilities for CSV parsing and normalization ---
+  const parseCSV = (text) => {
+    // Splits into rows and fields while respecting quoted fields
+    const rows = [];
+    const lines = text.split(/\r\n|\n/);
+    for (let rawLine of lines) {
+      if (rawLine.trim() === "") continue;
+      const row = [];
+      let cur = "";
+      let inQuotes = false;
+      for (let i = 0; i < rawLine.length; i++) {
+        const ch = rawLine[i];
+        if (ch === '"') {
+          if (inQuotes && rawLine[i + 1] === '"') {
+            cur += '"';
+            i++;
+          } else {
+            inQuotes = !inQuotes;
+          }
+        } else if (ch === "," && !inQuotes) {
+          row.push(cur);
+          cur = "";
+        } else {
+          cur += ch;
+        }
+      }
+      row.push(cur);
+      rows.push(row.map(cell => cell.trim()));
+    }
+    return rows;
+  };
+
+  const normalizeHeader = (h) => {
+    if (!h) return "";
+    // remove BOM, punctuation except spaces and alphanumerics, collapse spaces and lowercase
+    return h.replace(/\uFEFF/g, "")
+            .replace(/[^\w\s]/g, " ")
+            .replace(/\s+/g, " ")
+            .trim()
+            .toLowerCase();
+  };
+
+  const parseNumber = (s) => {
+    if (s === undefined || s === null) return 0;
+    let str = String(s).trim();
+    if (str === "") return 0;
+    // remove currency symbols, non-number separators
+    // detect parentheses -> negative
+    let negative = false;
+    if (str.includes("(") && str.includes(")")) {
+      negative = true;
+      str = str.replace(/[()]/g, "");
+    }
+    // remove common non-digit chars
+    str = str.replace(/[,₹£€$\s]/g, "");
+    // replace different minus characters
+    str = str.replace(/−/g, "-");
+    if (str === "-" || str === "—") return 0;
+    const n = parseFloat(str);
+    if (isNaN(n)) return 0;
+    return negative ? -Math.abs(n) : n;
+  };
+
+  const parseDateIso = (raw) => {
+    if (!raw) return "";
+    const s = String(raw).trim();
+    // Try native parse first
+    let d = new Date(s);
+    if (!isNaN(d)) {
+      // return ISO date (yyyy-mm-dd)
+      return d.toISOString().split("T")[0];
+    }
+    // Try dd/mm/yyyy or d/m/yy
+    const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+    if (m) {
+      let [_, dd, mm, yy] = m;
+      if (yy.length === 2) yy = "20" + yy;
+      const iso = `${yy.padStart(4, "0")}-${mm.padStart(2, "0")}-${dd.padStart(2, "0")}`;
+      d = new Date(iso);
+      if (!isNaN(d)) return iso;
+    }
+    // Fallback: return original trimmed string (we'll still try to derive month)
+    return s;
+  };
+
+  const monthShortFrom = (dateOrRaw) => {
+    if (!dateOrRaw) return "Unknown";
+    const d = new Date(dateOrRaw);
+    if (!isNaN(d)) return d.toLocaleString("default", { month: "short" });
+    // dd/mm/yyyy fallback:
+    const m = String(dateOrRaw).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
+    if (m) {
+      const monthNum = parseInt(m[2], 10);
+      const names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+      return names[(monthNum - 1) % 12] || "Unknown";
+    }
+    // fallback: try to extract month word
+    const word = String(dateOrRaw).match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)\b/i);
+    if (word) return word[0].slice(0,3);
+    return "Unknown";
+  };
+
+  // --- Main file handler (robust) ---
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -57,26 +159,107 @@ function App() {
     const reader = new FileReader();
     reader.onload = (e) => {
       const text = e.target.result;
-      const lines = text.trim().split("\n");
-      const headers = lines[0].toLowerCase();
-      if (!headers.includes("date") || !headers.includes("description") || !headers.includes("balance")) {
+      const rows = parseCSV(text);
+      if (!rows || rows.length < 2) {
         alert("Invalid file format.");
         return;
       }
 
-      const parsed = lines.slice(1).map((line) => {
-        const [date, description, deposit, withdrawal, balance, category] = line.split(",");
-        return {
-          date,
-          month: new Date(date).toLocaleString("default", { month: "short" }),
-          deposit: parseFloat(deposit) || 0,
-          withdrawal: parseFloat(withdrawal) || 0,
-          balance: parseFloat(balance) || 0,
-          category: category?.trim() || "Uncategorized",
-        };
-      });
+      // Normalize headers
+      const rawHeaders = rows[0].map(h => h ? String(h).replace(/\uFEFF/g, "").trim() : "");
+      const headers = rawHeaders.map(normalizeHeader);
 
-      setData(parsed); // ✅ Replace sample with uploaded data
+      // Helper to find header index by keywords (any match)
+      const findHeader = (keywords) => {
+        for (let i = 0; i < headers.length; i++) {
+          const h = headers[i];
+          for (const kw of keywords) {
+            if (h.includes(kw)) return i;
+          }
+        }
+        return -1;
+      };
+
+      // Find candidate columns (very tolerant)
+      let dateIdx =
+        // prefer plain date (not value date)
+        headers.findIndex(h => (h.includes("date") && !h.includes("value") && !h.includes("valuedate"))) ;
+      if (dateIdx === -1) dateIdx = findHeader(["value date", "value", "posting date", "transaction date", "value"]);
+      // deposit/credit
+      let depositIdx = findHeader(["deposit", "credit", "credit amt", "deposit amt", "credit amount", "creditamount"]);
+      // withdrawal/debit
+      let withdrawalIdx = findHeader(["withdrawal", "withdraw", "debit", "withdrawal amt", "debit amt", "withdraw amt"]);
+      // balance
+      let balanceIdx = findHeader(["balance", "balance amt", "balanceamount"]);
+      // transaction description/details
+      let descIdx = findHeader(["transaction", "description", "details", "narration", "particulars", "remarks"]);
+
+      // If we didn't find obvious deposit/withdrawal but there is an 'amount' column, use that as single amount column
+      const amountLikeIdx = depositIdx === -1 && withdrawalIdx === -1 ? findHeader(["amount", "amt", "value"]) : -1;
+
+      // If still no date, default to first column (safest fallback)
+      if (dateIdx === -1) dateIdx = 0;
+
+      // If headers look like the "old format" (date, description, deposit, withdrawal, balance, category)
+      const looksLikeOldFormat =
+        headers.includes("date") && (headers.includes("description") || headers.includes("transaction details")) && headers.includes("balance");
+
+      // Build parsed array
+      const parsed = rows.slice(1).map((cols) => {
+        // Make sure we have same length rows (safe access)
+        const get = (i) => (i >= 0 && i < cols.length ? cols[i] : "");
+
+        const rawDate = get(dateIdx);
+        const dateIso = parseDateIso(rawDate);
+        const month = monthShortFrom(dateIso || rawDate);
+
+        // Try to pull deposit & withdrawal robustly
+        let deposit = 0;
+        let withdrawal = 0;
+
+        if (depositIdx !== -1) deposit = parseNumber(get(depositIdx));
+        if (withdrawalIdx !== -1) withdrawal = parseNumber(get(withdrawalIdx));
+
+        // If none found, but there's a single amount-like column: decide sign
+        if ((deposit === 0 && withdrawal === 0) && amountLikeIdx !== -1) {
+          const amt = parseNumber(get(amountLikeIdx));
+          if (amt < 0) {
+            withdrawal = Math.abs(amt);
+          } else {
+            deposit = amt;
+          }
+        }
+
+        // If still zero, attempt positional fallback for common 6-col CSV (date, desc, deposit, withdrawal, balance, category)
+        if (deposit === 0 && withdrawal === 0 && looksLikeOldFormat) {
+          // Try to use positions: deposit at index 2, withdrawal at index 3
+          const maybeDeposit = parseNumber(get(2));
+          const maybeWithdrawal = parseNumber(get(3));
+          if (maybeDeposit !== 0 || maybeWithdrawal !== 0) {
+            deposit = maybeDeposit;
+            withdrawal = maybeWithdrawal;
+          }
+        }
+
+        const balance = balanceIdx !== -1 ? parseNumber(get(balanceIdx)) : parseNumber(get(cols.length - 1)); // guess last column if not found
+        const category = descIdx !== -1 ? get(descIdx) : (looksLikeOldFormat ? get(5) : "Uncategorized");
+
+        return {
+          date: dateIso || String(rawDate).trim(),
+          month,
+          deposit: deposit || 0,
+          withdrawal: withdrawal || 0,
+          balance: balance || 0,
+          category: category ? String(category).trim() : "Uncategorized",
+        };
+      }).filter(r => r.date || r.balance || r.deposit || r.withdrawal); // drop empty rows
+
+      if (!parsed || parsed.length === 0) {
+        alert("Invalid file format.");
+        return;
+      }
+
+      setData(parsed);
     };
     reader.readAsText(file);
   };
