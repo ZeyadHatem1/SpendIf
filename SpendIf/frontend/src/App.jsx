@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+
 import {
   FiMenu,
   FiUpload,
@@ -48,7 +49,14 @@ function App() {
   const [showNavbar, setShowNavbar] = useState(false);
   const [data, setData] = useState(sampleData); // ✅ Start with sample data
   const [hoveredItem, setHoveredItem] = useState(null);
+  const [backendMessage, setBackendMessage] = useState("");
 
+  useEffect(() => {
+    fetch("http://localhost:8080/api/hello")
+      .then((res) => res.text())
+      .then((msg) => setBackendMessage(msg))
+      .catch((err) => console.error("Error connecting to backend:", err));
+  }, []);
   // --- Helper utilities for CSV parsing and normalization ---
   const parseCSV = (text) => {
     // Splits into rows and fields while respecting quoted fields
@@ -83,7 +91,7 @@ function App() {
 
   const normalizeHeader = (h) => {
     if (!h) return "";
-    // remove BOM, punctuation except spaces and alphanumerics, collapse spaces and lowercase
+    
     return h.replace(/\uFEFF/g, "")
             .replace(/[^\w\s]/g, " ")
             .replace(/\s+/g, " ")
