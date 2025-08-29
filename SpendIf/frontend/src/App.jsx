@@ -25,13 +25,14 @@ import {
 } from "recharts";
 import UploadSection from "./UploadSection";
 import Analytics from "./Analytics";
-import Statistics from "./Statistics";  // <-- Import Statistics here
+import Statistics from "./Statistics";  
+import Authentication from "./Authentication";
 
 const navItems = [
   { name: "Dashboard", icon: <FiHome /> },
   { name: "Upload", icon: <FiUpload /> },
   { name: "Analytics", icon: <FiTrendingUp /> },
-  { name: "Statistics", icon: <FiBarChart2 /> },  // Your new tab
+  { name: "Statistics", icon: <FiBarChart2 /> },  
 ];
 
 const COLORS = ["#3B82F6", "#10B981", "#F59E0B", "#EF4444", "#6366F1"];
@@ -47,9 +48,13 @@ const sampleData = [
 function App() {
   const [activeTab, setActiveTab] = useState("Dashboard");
   const [showNavbar, setShowNavbar] = useState(false);
-  const [data, setData] = useState(sampleData); // ✅ Start with sample data
+  const [data, setData] = useState(sampleData); 
   const [hoveredItem, setHoveredItem] = useState(null);
   const [backendMessage, setBackendMessage] = useState("");
+  const [showAuth, setShowAuth] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(
+  !!localStorage.getItem("token")
+);
 
   useEffect(() => {
     fetch("http://localhost:8080/api/hello")
@@ -57,9 +62,9 @@ function App() {
       .then((msg) => setBackendMessage(msg))
       .catch((err) => console.error("Error connecting to backend:", err));
   }, []);
-  // --- Helper utilities for CSV parsing and normalization ---
+  
   const parseCSV = (text) => {
-    // Splits into rows and fields while respecting quoted fields
+    
     const rows = [];
     const lines = text.split(/\r\n|\n/);
     for (let rawLine of lines) {
@@ -103,16 +108,15 @@ function App() {
     if (s === undefined || s === null) return 0;
     let str = String(s).trim();
     if (str === "") return 0;
-    // remove currency symbols, non-number separators
-    // detect parentheses -> negative
+   
     let negative = false;
     if (str.includes("(") && str.includes(")")) {
       negative = true;
       str = str.replace(/[()]/g, "");
     }
-    // remove common non-digit chars
+    
     str = str.replace(/[,₹£€$\s]/g, "");
-    // replace different minus characters
+    
     str = str.replace(/−/g, "-");
     if (str === "-" || str === "—") return 0;
     const n = parseFloat(str);
@@ -123,13 +127,13 @@ function App() {
   const parseDateIso = (raw) => {
     if (!raw) return "";
     const s = String(raw).trim();
-    // Try native parse first
+    
     let d = new Date(s);
     if (!isNaN(d)) {
-      // return ISO date (yyyy-mm-dd)
+      
       return d.toISOString().split("T")[0];
     }
-    // Try dd/mm/yyyy or d/m/yy
+   
     const m = s.match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
     if (m) {
       let [_, dd, mm, yy] = m;
@@ -138,7 +142,7 @@ function App() {
       d = new Date(iso);
       if (!isNaN(d)) return iso;
     }
-    // Fallback: return original trimmed string (we'll still try to derive month)
+    
     return s;
   };
 
@@ -146,20 +150,20 @@ function App() {
     if (!dateOrRaw) return "Unknown";
     const d = new Date(dateOrRaw);
     if (!isNaN(d)) return d.toLocaleString("default", { month: "short" });
-    // dd/mm/yyyy fallback:
+    
     const m = String(dateOrRaw).match(/^(\d{1,2})[\/\-](\d{1,2})[\/\-](\d{2,4})$/);
     if (m) {
       const monthNum = parseInt(m[2], 10);
       const names = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
       return names[(monthNum - 1) % 12] || "Unknown";
     }
-    // fallback: try to extract month word
+    
     const word = String(dateOrRaw).match(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec|January|February|March|April|June|July|August|September|October|November|December)\b/i);
     if (word) return word[0].slice(0,3);
     return "Unknown";
   };
 
-  // --- Main file handler (robust) ---
+  
   const handleFileUpload = (event) => {
     const file = event.target.files[0];
     if (!file) return;
@@ -173,11 +177,11 @@ function App() {
         return;
       }
 
-      // Normalize headers
+      
       const rawHeaders = rows[0].map(h => h ? String(h).replace(/\uFEFF/g, "").trim() : "");
       const headers = rawHeaders.map(normalizeHeader);
 
-      // Helper to find header index by keywords (any match)
+      
       const findHeader = (keywords) => {
         for (let i = 0; i < headers.length; i++) {
           const h = headers[i];
@@ -188,47 +192,47 @@ function App() {
         return -1;
       };
 
-      // Find candidate columns (very tolerant)
+      
       let dateIdx =
-        // prefer plain date (not value date)
+        
         headers.findIndex(h => (h.includes("date") && !h.includes("value") && !h.includes("valuedate"))) ;
       if (dateIdx === -1) dateIdx = findHeader(["value date", "value", "posting date", "transaction date", "value"]);
-      // deposit/credit
+      
       let depositIdx = findHeader(["deposit", "credit", "credit amt", "deposit amt", "credit amount", "creditamount"]);
-      // withdrawal/debit
+      
       let withdrawalIdx = findHeader(["withdrawal", "withdraw", "debit", "withdrawal amt", "debit amt", "withdraw amt"]);
-      // balance
+      
       let balanceIdx = findHeader(["balance", "balance amt", "balanceamount"]);
-      // transaction description/details
+      
       let descIdx = findHeader(["transaction", "description", "details", "narration", "particulars", "remarks"]);
 
-      // If we didn't find obvious deposit/withdrawal but there is an 'amount' column, use that as single amount column
+      
       const amountLikeIdx = depositIdx === -1 && withdrawalIdx === -1 ? findHeader(["amount", "amt", "value"]) : -1;
 
-      // If still no date, default to first column (safest fallback)
+      
       if (dateIdx === -1) dateIdx = 0;
 
-      // If headers look like the "old format" (date, description, deposit, withdrawal, balance, category)
+      
       const looksLikeOldFormat =
         headers.includes("date") && (headers.includes("description") || headers.includes("transaction details")) && headers.includes("balance");
 
-      // Build parsed array
+      
       const parsed = rows.slice(1).map((cols) => {
-        // Make sure we have same length rows (safe access)
+        
         const get = (i) => (i >= 0 && i < cols.length ? cols[i] : "");
 
         const rawDate = get(dateIdx);
         const dateIso = parseDateIso(rawDate);
         const month = monthShortFrom(dateIso || rawDate);
 
-        // Try to pull deposit & withdrawal robustly
+        
         let deposit = 0;
         let withdrawal = 0;
 
         if (depositIdx !== -1) deposit = parseNumber(get(depositIdx));
         if (withdrawalIdx !== -1) withdrawal = parseNumber(get(withdrawalIdx));
 
-        // If none found, but there's a single amount-like column: decide sign
+        
         if ((deposit === 0 && withdrawal === 0) && amountLikeIdx !== -1) {
           const amt = parseNumber(get(amountLikeIdx));
           if (amt < 0) {
@@ -238,9 +242,9 @@ function App() {
           }
         }
 
-        // If still zero, attempt positional fallback for common 6-col CSV (date, desc, deposit, withdrawal, balance, category)
+        
         if (deposit === 0 && withdrawal === 0 && looksLikeOldFormat) {
-          // Try to use positions: deposit at index 2, withdrawal at index 3
+          
           const maybeDeposit = parseNumber(get(2));
           const maybeWithdrawal = parseNumber(get(3));
           if (maybeDeposit !== 0 || maybeWithdrawal !== 0) {
@@ -249,7 +253,7 @@ function App() {
           }
         }
 
-        const balance = balanceIdx !== -1 ? parseNumber(get(balanceIdx)) : parseNumber(get(cols.length - 1)); // guess last column if not found
+        const balance = balanceIdx !== -1 ? parseNumber(get(balanceIdx)) : parseNumber(get(cols.length - 1)); 
         const category = descIdx !== -1 ? get(descIdx) : (looksLikeOldFormat ? get(5) : "Uncategorized");
 
         return {
@@ -260,7 +264,7 @@ function App() {
           balance: balance || 0,
           category: category ? String(category).trim() : "Uncategorized",
         };
-      }).filter(r => r.date || r.balance || r.deposit || r.withdrawal); // drop empty rows
+      }).filter(r => r.date || r.balance || r.deposit || r.withdrawal); 
 
       if (!parsed || parsed.length === 0) {
         alert("Invalid file format.");
@@ -334,6 +338,43 @@ function App() {
                 </li>
               ))}
             </ul>
+            <div style={{ marginTop: "auto", padding: "1rem" }}>
+  {isAuthenticated ? (
+    <button
+      onClick={() => {
+        localStorage.removeItem("token");
+        setIsAuthenticated(false);
+      }}
+      style={{
+        width: "100%",
+        background: "#DC2626",
+        color: "white",
+        padding: "0.5rem",
+        borderRadius: "0.5rem",
+        border: "none",
+        cursor: "pointer",
+      }}
+    >
+      Logout
+    </button>
+  ) : (
+    <button
+      onClick={() => setShowAuth(true)}
+      style={{
+        width: "100%",
+        background: "#2563EB",
+        color: "white",
+        padding: "0.5rem",
+        borderRadius: "0.5rem",
+        border: "none",
+        cursor: "pointer",
+      }}
+    >
+      Login / Sign Up
+    </button>
+  )}
+</div>
+
           </nav>
           <button onClick={() => setShowNavbar(false)} style={styles.closeButton}>
             <FiX size={24} />
@@ -401,6 +442,17 @@ function App() {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
+                {showAuth && (
+               <Authentication
+               onClose={() => setShowAuth(false)}
+              onAuthSuccess={() => {
+                setIsAuthenticated(true);
+              setShowAuth(false);
+            }}
+          
+  />
+)}
+
               </div>
             </>
           )}
