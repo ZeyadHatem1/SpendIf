@@ -5,7 +5,6 @@ export default function Authentication({ onClose, onAuthSuccess }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    // For now, just simulate login/signup success
     localStorage.setItem("token", "fake-jwt-token");
     onAuthSuccess();
     onClose();
@@ -44,8 +43,8 @@ const styles = {
   overlay: {
     position: "fixed",
     top: 0, left: 0, right: 0, bottom: 0,
-    background: "rgba(0,0,0,0.5)", // blur effect background
-    backdropFilter: "blur(4px)",   // ✅ blur the background
+    background: "rgba(0,0,0,0.5)", 
+    backdropFilter: "blur(4px)",   
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -88,11 +87,12 @@ const styles = {
     background: "transparent",
     fontSize: "1.2rem",
     cursor: "pointer",
+    color: "#333",
   },
   linkButton: {
     background: "transparent",
     border: "none",
-    color: "#007bff",
+    color: "#1e00ffff",
     cursor: "pointer",
     fontSize: "1rem",
   },

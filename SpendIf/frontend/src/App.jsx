@@ -388,7 +388,7 @@ function App() {
 
           {activeTab === "Upload" && <UploadSection handleFileUpload={handleFileUpload} />}
           {activeTab === "Analytics" && <Analytics data={data} />}
-          {activeTab === "Statistics" && <Statistics data={data} />}  {/* <-- Added this */}
+          {activeTab === "Statistics" && <Statistics data={data} />}  
 
           {activeTab === "Dashboard" && (
             <>
