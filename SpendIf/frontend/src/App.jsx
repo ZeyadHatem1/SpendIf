@@ -442,16 +442,7 @@ function App() {
                     </PieChart>
                   </ResponsiveContainer>
                 </div>
-                {showAuth && (
-               <Authentication
-               onClose={() => setShowAuth(false)}
-              onAuthSuccess={() => {
-                setIsAuthenticated(true);
-              setShowAuth(false);
-            }}
-          
-  />
-)}
+               
 
               </div>
             </>
@@ -462,6 +453,16 @@ function App() {
           <p>&copy; 2025 SpendIf.</p>
         </footer>
       </div>
+       {showAuth && (
+               <Authentication
+               onClose={() => setShowAuth(false)}
+              onAuthSuccess={() => {
+                setIsAuthenticated(true);
+              setShowAuth(false);
+            }}
+          
+  />
+  )}
     </div>
   );
 }
