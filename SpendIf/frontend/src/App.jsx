@@ -27,6 +27,7 @@ import UploadSection from "./UploadSection";
 import Analytics from "./Analytics";
 import Statistics from "./Statistics";  
 import Authentication from "./Authentication";
+import FlaggedTransactions from "./FlaggedTransactions";
 
 const navItems = [
   { name: "Dashboard", icon: <FiHome /> },
@@ -52,9 +53,11 @@ function App() {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [backendMessage, setBackendMessage] = useState("");
   const [showAuth, setShowAuth] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState(
+  const [isAuthenticated, setIsAuthenticated] = useState();
+  const [showFlagged, setShowFlagged] = useState(false);
+
   !!localStorage.getItem("token")
-);
+
 
   useEffect(() => {
     fetch("http://localhost:8080/api/hello")
@@ -398,11 +401,13 @@ function App() {
               </label>
 
               <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-                <Card title="Total Balance" value={`$${latestBalance.toFixed(2)}`} subtitle={"Latest balance"} color="green" />
-                <Card title="Monthly Income" value={`$${monthlyIncome.toFixed(0)}`} subtitle="Total deposits" color="green" />
-                <Card title="Monthly Expenses" value={`$${monthlyExpenses.toFixed(0)}`} subtitle="Total withdrawals" color="red" />
-                <Card title="Flagged Transactions" value={"0"} subtitle="Requires review" color="orange" />
-              </div>
+          <Card title="Total Balance" value={`$${latestBalance.toFixed(2)}`} subtitle={"Latest balance"} color="green" />
+          <Card title="Monthly Income" value={`$${monthlyIncome.toFixed(0)}`} subtitle="Total deposits" color="green" />
+          <Card title="Monthly Expenses" value={`$${monthlyExpenses.toFixed(0)}`} subtitle="Total withdrawals" color="red" />
+          <Card title="Flagged Transactions" value={data && data.length > 0 ? 0 : 3} subtitle="Requires review" color="orange" onClick={() => setShowFlagged(true)}
+        />
+            </div>
+
 
               <div style={{ display: "flex", gap: "1rem", marginTop: "2rem", flexWrap: "wrap" }}>
                 <div style={{ flex: 1, minWidth: "400px" }}>
@@ -460,20 +465,27 @@ function App() {
                 setIsAuthenticated(true);
               setShowAuth(false);
             }}
-          
-  />
-  )}
+          />
+      )}
+       {showFlagged && (
+        <FlaggedTransactions
+        data={data}
+        onClose={() => setShowFlagged(false)}
+      />
+      )}
+
     </div>
   );
 }
 
-function Card({ title, value, subtitle, color }) {
+function Card({ title, value, subtitle, color, onClick }) {
   const [hover, setHover] = useState(false);
 
   return (
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
+      onClick={onClick} 
       style={{
         background: "#fff",
         padding: "1rem",
@@ -485,6 +497,7 @@ function Card({ title, value, subtitle, color }) {
           : "0 1px 2px rgba(0,0,0,0.1)",
         transform: hover ? "translateY(-4px)" : "none",
         transition: "all 0.2s ease-in-out",
+        cursor: onClick ? "pointer" : "default", // pointer if clickable
       }}
     >
       <p style={{ fontWeight: 600 }}>{title}</p>
@@ -493,6 +506,7 @@ function Card({ title, value, subtitle, color }) {
     </div>
   );
 }
+
 
 const styles = {
   wrapper: { display: "flex", minHeight: "100vh", fontFamily: "sans-serif" },

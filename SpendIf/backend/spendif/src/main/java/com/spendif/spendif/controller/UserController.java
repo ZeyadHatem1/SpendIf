@@ -17,12 +17,12 @@ public class UserController {
     // ✅ Signup endpoint
     @PostMapping("/signup")
     public User signup(@RequestBody User user) {
-        return userService.registerUser(user.getUserName(), user.getPassword());
+        return userService.registerUser(user.getUsername(), user.getPassword());
     }
 
     // ✅ Login endpoint
     @PostMapping("/login")
     public User login(@RequestBody User user) {
-        return userService.loginUser(user.getUserName(), user.getPassword());
+        return userService.loginUser(user.getUsername(), user.getPassword());
     }
 }
