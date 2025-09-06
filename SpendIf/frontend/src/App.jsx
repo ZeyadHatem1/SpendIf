@@ -55,7 +55,8 @@ function App() {
   const [showAuth, setShowAuth] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState();
   const [showFlagged, setShowFlagged] = useState(false);
-
+  const [uploadedData, setUploadedData] = useState(null); 
+  const [flaggedCount, setFlaggedCount] = useState(0);
   !!localStorage.getItem("token")
 
 
@@ -221,60 +222,78 @@ function App() {
 
       
       const parsed = rows.slice(1).map((cols) => {
-        
-        const get = (i) => (i >= 0 && i < cols.length ? cols[i] : "");
+  const get = (i) => (i >= 0 && i < cols.length ? cols[i] : "");
 
-        const rawDate = get(dateIdx);
-        const dateIso = parseDateIso(rawDate);
-        const month = monthShortFrom(dateIso || rawDate);
+  const rawDate = get(dateIdx);
+  const dateIso = parseDateIso(rawDate);
+  const month = monthShortFrom(dateIso || rawDate);
 
-        
-        let deposit = 0;
-        let withdrawal = 0;
+  let deposit = 0;
+  let withdrawal = 0;
 
-        if (depositIdx !== -1) deposit = parseNumber(get(depositIdx));
-        if (withdrawalIdx !== -1) withdrawal = parseNumber(get(withdrawalIdx));
+  if (depositIdx !== -1) deposit = parseNumber(get(depositIdx));
+  if (withdrawalIdx !== -1) withdrawal = parseNumber(get(withdrawalIdx));
 
-        
-        if ((deposit === 0 && withdrawal === 0) && amountLikeIdx !== -1) {
-          const amt = parseNumber(get(amountLikeIdx));
-          if (amt < 0) {
-            withdrawal = Math.abs(amt);
-          } else {
-            deposit = amt;
-          }
-        }
+  if ((deposit === 0 && withdrawal === 0) && amountLikeIdx !== -1) {
+    const amt = parseNumber(get(amountLikeIdx));
+    if (amt < 0) {
+      withdrawal = Math.abs(amt);
+    } else {
+      deposit = amt;
+    }
+  }
 
-        
-        if (deposit === 0 && withdrawal === 0 && looksLikeOldFormat) {
-          
-          const maybeDeposit = parseNumber(get(2));
-          const maybeWithdrawal = parseNumber(get(3));
-          if (maybeDeposit !== 0 || maybeWithdrawal !== 0) {
-            deposit = maybeDeposit;
-            withdrawal = maybeWithdrawal;
-          }
-        }
+  if (deposit === 0 && withdrawal === 0 && looksLikeOldFormat) {
+    const maybeDeposit = parseNumber(get(2));
+    const maybeWithdrawal = parseNumber(get(3));
+    if (maybeDeposit !== 0 || maybeWithdrawal !== 0) {
+      deposit = maybeDeposit;
+      withdrawal = maybeWithdrawal;
+    }
+  }
 
-        const balance = balanceIdx !== -1 ? parseNumber(get(balanceIdx)) : parseNumber(get(cols.length - 1)); 
-        const category = descIdx !== -1 ? get(descIdx) : (looksLikeOldFormat ? get(5) : "Uncategorized");
+  const balance = balanceIdx !== -1 ? parseNumber(get(balanceIdx)) : parseNumber(get(cols.length - 1)); 
+  const category = descIdx !== -1 ? get(descIdx) : (looksLikeOldFormat ? get(5) : "Uncategorized");
 
-        return {
-          date: dateIso || String(rawDate).trim(),
-          month,
-          deposit: deposit || 0,
-          withdrawal: withdrawal || 0,
-          balance: balance || 0,
-          category: category ? String(category).trim() : "Uncategorized",
-        };
-      }).filter(r => r.date || r.balance || r.deposit || r.withdrawal); 
+  // ---------------- Fraud rules ----------------
+  let flagged = false;
+  let flagReason = "";
+
+  if (deposit > 3000) {
+    flagged = true;
+    flagReason = "Unusually high deposit";
+  } else if (withdrawal > 2000) {
+    flagged = true;
+    flagReason = "Unusually high withdrawal";
+  } else if (category?.toLowerCase().includes("entertainment") && withdrawal > 1000) {
+    flagged = true;
+    flagReason = "Suspicious entertainment spend";
+  } else if (category?.toLowerCase().includes("food") && withdrawal > 1000) {
+    flagged = true;
+    flagReason = "Suspicious food expense";
+  }
+
+  return {
+    date: dateIso || String(rawDate).trim(),
+    month,
+    deposit: deposit || 0,
+    withdrawal: withdrawal || 0,
+    balance: balance || 0,
+    category: category ? String(category).trim() : "Uncategorized",
+    flagged,
+    flagReason,
+  };
+}).filter(r => r.date || r.balance || r.deposit || r.withdrawal);
+ 
 
       if (!parsed || parsed.length === 0) {
         alert("Invalid file format.");
         return;
       }
-
       setData(parsed);
+      setUploadedData(parsed);
+      const flaggedTx = parsed.filter(tx => tx.flagged);
+      setFlaggedCount(flaggedTx.length);
     };
     reader.readAsText(file);
   };
@@ -404,7 +423,7 @@ function App() {
           <Card title="Total Balance" value={`$${latestBalance.toFixed(2)}`} subtitle={"Latest balance"} color="green" />
           <Card title="Monthly Income" value={`$${monthlyIncome.toFixed(0)}`} subtitle="Total deposits" color="green" />
           <Card title="Monthly Expenses" value={`$${monthlyExpenses.toFixed(0)}`} subtitle="Total withdrawals" color="red" />
-          <Card title="Flagged Transactions" value={data && data.length > 0 ? 0 : 3} subtitle="Requires review" color="orange" onClick={() => setShowFlagged(true)}
+          <Card title="Flagged Transactions" value={uploadedData ? flaggedCount : 3} subtitle={uploadedData && flaggedCount === 0 ? "No flagged transactions / wrong file" : "Requires review"} color="orange" onClick={() => setShowFlagged(true)}
         />
             </div>
 
@@ -469,8 +488,9 @@ function App() {
       )}
        {showFlagged && (
         <FlaggedTransactions
-        data={data}
+        data={uploadedData}
         onClose={() => setShowFlagged(false)}
+        onCountUpdate={setFlaggedCount}
       />
       )}
 
@@ -497,7 +517,7 @@ function Card({ title, value, subtitle, color, onClick }) {
           : "0 1px 2px rgba(0,0,0,0.1)",
         transform: hover ? "translateY(-4px)" : "none",
         transition: "all 0.2s ease-in-out",
-        cursor: onClick ? "pointer" : "default", // pointer if clickable
+        cursor: onClick ? "pointer" : "default", 
       }}
     >
       <p style={{ fontWeight: 600 }}>{title}</p>
