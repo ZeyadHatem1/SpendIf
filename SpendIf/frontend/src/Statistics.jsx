@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 // HoverCard with hover effect (same as Upload page)
 const HoverCard = ({ children }) => {
@@ -23,83 +22,64 @@ const HoverCard = ({ children }) => {
 };
 
 const Statistics = ({ data }) => {
-  // 🔥 changed — define sample fallback data
+  // Sample fallback data
   const sampleData = [
     {
       date: "2025-07-01",
       description: "Restaurant dinner",
-      withdrawals: "45.00",
+      withdrawal: "45.00",
       deposit: "0",
       balance: "500.00",
     },
     {
       date: "2025-07-05",
       description: "Salary",
-      withdrawals: "0",
+      withdrawal: "0",
       deposit: "2000.00",
       balance: "2500.00",
     },
     {
       date: "2025-07-10",
       description: "Movie ticket",
-      withdrawals: "15.00",
+      withdrawal: "15.00",
       deposit: "0",
       balance: "2485.00",
     },
   ];
 
-  // 🔥 changed — choose dataset (uploaded data or sample data)
   const dataset = data && data.length > 0 ? data : sampleData;
 
-  // Total balance
+  // Totals
   const totalBalance =
     dataset.length > 0 ? parseFloat(dataset[dataset.length - 1].balance) : 0;
-
-  // Total income (sum of deposits)
   const totalIncome = dataset.reduce(
-    (sum, transaction) => sum + (parseFloat(transaction.deposit) || 0),
+    (sum, t) => sum + (parseFloat(t.deposit) || 0),
     0
   );
-
-  // Total expenses (sum of withdrawals)
   const totalExpenses = dataset.reduce(
-    (sum, transaction) => sum + (parseFloat(transaction.withdrawals) || 0),
+    (sum, t) => sum + (parseFloat(t.withdrawal) || 0),
     0
   );
 
-  // Category breakdown (keyword-based)
-  const categorySums = { Food: 0, Entertainment: 0, Other: 0 };
-  dataset.forEach((transaction) => {
-    const desc = transaction.description?.toLowerCase() || "";
-    const amount = parseFloat(transaction.withdrawals) || 0;
-    if (
-      desc.includes("restaurant") ||
-      desc.includes("grocery") ||
-      desc.includes("food")
-    ) {
+  // Category breakdown
+  const categorySums = { Food: 0, Entertainment: 0, Extras: 0 };
+  dataset.forEach((t) => {
+    const desc = t.description?.toLowerCase() || "";
+    const amount = parseFloat(t.withdrawal) || 0;
+    if (desc.includes("restaurant") || desc.includes("grocery") || desc.includes("food")) {
       categorySums.Food += amount;
-    } else if (
-      desc.includes("cinema") ||
-      desc.includes("movie") ||
-      desc.includes("concert")
-    ) {
+    } else if (desc.includes("cinema") || desc.includes("movie") || desc.includes("concert")) {
       categorySums.Entertainment += amount;
     } else {
-      categorySums.Other += amount;
+      categorySums.Extras += amount;
     }
   });
 
-  const pieData = [
-    { name: "Food", value: categorySums.Food },
-    { name: "Entertainment", value: categorySums.Entertainment },
-    { name: "Other", value: categorySums.Other },
-  ];
-
-  const COLORS = ["#4CAF50", "#FF9800", "#2196F3"];
-
-  // Find latest month in dataset
-  const lastDate = new Date(dataset[dataset.length - 1].date);
-  const monthName = lastDate.toLocaleString("default", { month: "long" });
+  // Last month name (only if dataset exists)
+  const lastDate = dataset.length > 0 ? new Date(dataset[dataset.length - 1].date) : null;
+  const monthName = lastDate
+    ? lastDate.toLocaleString("default", { month: "long" })
+    : "";
 
   return (
     <div style={styles.container}>
@@ -124,45 +104,32 @@ const Statistics = ({ data }) => {
       <HoverCard>
         <h2 style={styles.title}>Expense Breakdown</h2>
 
-        {/* 🔥 changed — dynamic sentences based on dataset (uploaded or sample) */}
-        <div style={{ marginBottom: "1rem" }}>
-          {pieData.map(
-            (cat) =>
-              cat.value > 0 && (
-                <p key={cat.name} style={styles.text}>
-                  You spent{" "}
-                  <strong style={{ color: "#000" }}>
-                    ${cat.value.toFixed(2)}
-                  </strong>{" "}
-                  on <strong style={{ color: "#000" }}>{cat.name}</strong> during{" "}
-                  <strong style={{ color: "#000" }}>{monthName}</strong>.
-                </p>
-              )
-          )}
-        </div>
-
-        <ResponsiveContainer width="100%" height={220}>
-          <PieChart>
-            <Pie
-              data={pieData}
-              dataKey="value"
-              nameKey="name"
-              cx="80%"
-              cy="80%"
-              outerRadius={100}
-              fill="#8884d8"
-              label
-            >
-              {pieData.map((entry, index) => (
-                <Cell
-                  key={`cell-${index}`}
-                  fill={COLORS[index % COLORS.length]}
-                />
-              ))}
-            </Pie>
-            <Tooltip />
-          </PieChart>
-        </ResponsiveContainer>
+        {dataset.length > 0 ? (
+          <div style={{ marginBottom: "1rem" }}>
+            {Object.entries(categorySums).map(
+              ([cat, value]) =>
+                value > 0 && (
+                  <div key={cat} style={{ marginBottom: "1rem" }}>
+                    <p style={styles.text}>
+                      You spent{" "}
+                      <strong style={{ color: "#000" }}>
+                        ${value.toFixed(2)}
+                      </strong>{" "}
+                      on <strong style={{ color: "#000" }}>{cat}</strong>{" "}
+                      during <strong style={{ color: "#000" }}>{monthName}</strong>.
+                    </p>
+                    <p style={{ ...styles.text, fontStyle: "italic", color: "#6b7280" }}>
+                      💡 Try reducing your spending on {cat.toLowerCase()} to save more.
+                    </p>
+                  </div>
+                )
+            )}
+          </div>
+        ) : (
+          <p style={{ ...styles.text, textAlign: "center", marginTop: "2rem" }}>
+            Upload a file first!
+          </p>
+        )}
       </HoverCard>
     </div>
   );
@@ -177,7 +144,7 @@ const styles = {
     justifyContent: "center",
     alignItems: "stretch",
     width: "100%",
-    maxWidth: "2200px",
+    maxWidth: "1800px",
     marginLeft: "auto",
     marginRight: "auto",
   },
@@ -186,22 +153,19 @@ const styles = {
     borderRadius: "0.5rem",
     padding: "1.5rem",
     boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-    flex: "1 1 45%",
-    minWidth: "500px",
+    flex: "1 1 40%",
+    minWidth: "400px",
     display: "flex",
     flexDirection: "column",
-    justifyContent: "space-between",
+    alignItems: "flex-start", 
+    justifyContent: "flex-start", 
     transition: "all 0.2s ease-in-out",
-    minHeight: "320px",
+    minHeight: "420px",
   },
   title: {
     fontSize: "1.25rem",
     fontWeight: 600,
     marginBottom: "0.75rem",
-  },
-  subtitle: {
-    color: "#6B7280",
-    marginBottom: "1rem",
   },
   text: {
     color: "#374151",

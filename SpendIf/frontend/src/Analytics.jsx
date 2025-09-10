@@ -69,7 +69,7 @@ const Analytics = ({ data }) => {
           </ul>
         )}
         <p style={{ fontSize: "1rem", color: "#9CA3AF", marginTop: "1.5rem" }}>
-          Click to view transactions
+          Click to view previously uploaded transactions.
         </p>
       </div>
 
