@@ -8,7 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:3000") // allow React frontend
+@CrossOrigin(origins = "http://localhost:5173") // allow React frontend
 public class UserController {
 
     private final UserService userService;
@@ -21,24 +21,26 @@ public class UserController {
     public static class UserResponse {
         private Long id;
         private String username;
+        private String email;
 
-        public UserResponse(Long id, String username) {
+        public UserResponse(Long id, String username, String email) {
             this.id = id;
             this.username = username;
+            this.email = email;
         }
 
         public Long getId() { return id; }
         public String getUsername() { return username; }
+        public String getEmail() { return email; }
     }
 
     // ✅ Signup endpoint
     @PostMapping("/signup")
     public UserResponse signup(@RequestBody User user) {
         try {
-            User saved = userService.registerUser(user.getUsername(), user.getPassword());
-            return new UserResponse(saved.getId(), saved.getUsername());
+            User saved = userService.registerUser(user.getUsername(), user.getEmail(), user.getPassword());
+            return new UserResponse(saved.getId(), saved.getUsername(), saved.getEmail());
         } catch (RuntimeException e) {
-            // Example: username already exists
             throw new ResponseStatusException(HttpStatus.CONFLICT, e.getMessage());
         }
     }
@@ -47,11 +49,21 @@ public class UserController {
     @PostMapping("/login")
     public UserResponse login(@RequestBody User user) {
         try {
-            User loggedIn = userService.loginUser(user.getUsername(), user.getPassword());
-            return new UserResponse(loggedIn.getId(), loggedIn.getUsername());
+            User loggedIn = userService.loginUser(user.getEmail(), user.getPassword());
+            return new UserResponse(loggedIn.getId(), loggedIn.getUsername(), loggedIn.getEmail());
         } catch (RuntimeException e) {
-            // Example: invalid credentials
             throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, e.getMessage());
+        }
+    }
+
+    // ✅ Email verification endpoint
+    @GetMapping("/verify")
+    public String verifyUser(@RequestParam("token") String token) {
+        try {
+            userService.verifyUser(token);
+            return "✅ Account verified successfully! You can now log in.";
+        } catch (RuntimeException e) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
         }
     }
 }
