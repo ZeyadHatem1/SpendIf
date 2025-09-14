@@ -53,11 +53,12 @@ function App() {
   const [hoveredItem, setHoveredItem] = useState(null);
   const [backendMessage, setBackendMessage] = useState("");
   const [showAuth, setShowAuth] = useState(false);
-  const [isAuthenticated, setIsAuthenticated] = useState();
+  const [isAuthenticated, setIsAuthenticated] = useState(
+    !!localStorage.getItem("token"));
   const [showFlagged, setShowFlagged] = useState(false);
   const [uploadedData, setUploadedData] = useState(null); 
   const [flaggedCount, setFlaggedCount] = useState(0);
-  !!localStorage.getItem("token")
+
 
 
   useEffect(() => {

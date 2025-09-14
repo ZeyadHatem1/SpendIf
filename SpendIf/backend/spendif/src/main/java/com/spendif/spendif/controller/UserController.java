@@ -56,14 +56,5 @@ public class UserController {
         }
     }
 
-    // ✅ Email verification endpoint
-    @GetMapping("/verify")
-    public String verifyUser(@RequestParam("token") String token) {
-        try {
-            userService.verifyUser(token);
-            return "✅ Account verified successfully! You can now log in.";
-        } catch (RuntimeException e) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage());
-        }
-    }
+    
 }

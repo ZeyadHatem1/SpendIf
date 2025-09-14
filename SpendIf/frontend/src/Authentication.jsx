@@ -10,10 +10,10 @@ export default function Authentication({ onClose, onAuthSuccess }) {
     setLoading(true);
     setError("");
 
-    const username = e.target[0].value.trim();
+    const email = e.target[0].value.trim();
     const password = e.target[1].value.trim();
 
-    if (!username || !password) {
+    if (!email || !password) {
       setError("Please fill in both fields");
       setLoading(false);
       return;
@@ -25,19 +25,19 @@ export default function Authentication({ onClose, onAuthSuccess }) {
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ username, password }),
+          body: JSON.stringify({ email, password }), // send email & password
         }
       );
 
       const data = await response.json();
 
       if (!response.ok) {
-        // Backend sends error messages in response body
-        throw new Error(data.message || "Authentication failed");
+        // Backend sends error in "error" key
+        throw new Error(data.error || "Authentication failed");
       }
 
-      // Store token (for now using username; replace with JWT later)
-      localStorage.setItem("token", data.username);
+      // Store token (for now using email; replace with JWT later)
+      localStorage.setItem("token", data.email);
 
       onAuthSuccess();
       onClose();
@@ -58,7 +58,7 @@ export default function Authentication({ onClose, onAuthSuccess }) {
         <form onSubmit={handleSubmit} style={styles.form}>
           <input
             type="text"
-            placeholder="Username or Email"
+            placeholder="Email"
             required
             style={styles.input}
           />
