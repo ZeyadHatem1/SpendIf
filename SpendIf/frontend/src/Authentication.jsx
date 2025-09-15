@@ -10,29 +10,43 @@ export default function Authentication({ onClose, onAuthSuccess }) {
     setLoading(true);
     setError("");
 
-    const email = e.target[0].value.trim();
-    const password = e.target[1].value.trim();
+    // Conditional values based on login/signup
+    let username = "";
+    let email = "";
+    let password = "";
 
-    if (!email || !password) {
-      setError("Please fill in both fields");
+    if (isLogin) {
+      email = e.target[0].value.trim();
+      password = e.target[1].value.trim();
+    } else {
+      username = e.target[0].value.trim();
+      email = e.target[1].value.trim();
+      password = e.target[2].value.trim();
+    }
+
+    if (!email || !password || (!isLogin && !username)) {
+      setError("Please fill in all required fields");
       setLoading(false);
       return;
     }
 
     try {
+      const body = isLogin
+        ? { email, password }
+        : { username, email, password };
+
       const response = await fetch(
         `http://localhost:8080/api/auth/${isLogin ? "login" : "signup"}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email, password }), // send email & password
+          body: JSON.stringify(body),
         }
       );
 
       const data = await response.json();
 
       if (!response.ok) {
-        // Backend sends error in "error" key
         throw new Error(data.error || "Authentication failed");
       }
 
@@ -56,6 +70,14 @@ export default function Authentication({ onClose, onAuthSuccess }) {
         {error && <p style={{ color: "red" }}>{error}</p>}
 
         <form onSubmit={handleSubmit} style={styles.form}>
+          {!isLogin && (
+            <input
+              type="text"
+              placeholder="Username"
+              required
+              style={styles.input}
+            />
+          )}
           <input
             type="text"
             placeholder="Email"
