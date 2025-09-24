@@ -36,7 +36,8 @@ export default function Authentication({ onClose, onAuthSuccess }) {
         : { username, email, password };
 
       const response = await fetch(
-        `http://localhost:8080/api/auth/${isLogin ? "login" : "signup"}`,
+        `/api/auth/${isLogin ? "login" : "signup"}`
+,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },

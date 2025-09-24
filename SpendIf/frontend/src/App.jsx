@@ -62,7 +62,7 @@ function App() {
 
 
   useEffect(() => {
-    fetch("http://localhost:8080/api/hello")
+    fetch("/api/hello")
       .then((res) => res.text())
       .then((msg) => setBackendMessage(msg))
       .catch((err) => console.error("Error connecting to backend:", err));

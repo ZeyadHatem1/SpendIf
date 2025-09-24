@@ -8,7 +8,7 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/auth")
-@CrossOrigin(origins = "http://localhost:5173") // allow React frontend
+@CrossOrigin(origins = "http://localhost:3000") // allow React frontend
 public class UserController {
 
     private final UserService userService;
