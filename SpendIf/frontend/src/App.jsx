@@ -28,6 +28,7 @@ import Analytics from "./Analytics";
 import Statistics from "./Statistics";  
 import Authentication from "./Authentication";
 import FlaggedTransactions from "./FlaggedTransactions";
+const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
 
 const navItems = [
   { name: "Dashboard", icon: <FiHome /> },
@@ -62,7 +63,7 @@ function App() {
 
 
   useEffect(() => {
-    fetch("/api/hello")
+    fetch(`${API_BASE}/api/hello`)
       .then((res) => res.text())
       .then((msg) => setBackendMessage(msg))
       .catch((err) => console.error("Error connecting to backend:", err));

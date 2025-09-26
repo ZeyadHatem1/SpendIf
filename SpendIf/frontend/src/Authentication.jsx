@@ -1,5 +1,9 @@
 import React, { useState } from "react";
 
+
+const API_BASE =
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8080";
+
 export default function Authentication({ onClose, onAuthSuccess }) {
   const [isLogin, setIsLogin] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -35,9 +39,9 @@ export default function Authentication({ onClose, onAuthSuccess }) {
         ? { email, password }
         : { username, email, password };
 
+      // ✅ Updated fetch URL to use dynamic base
       const response = await fetch(
-        `/api/auth/${isLogin ? "login" : "signup"}`
-,
+        `${API_BASE}/api/auth/${isLogin ? "login" : "signup"}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
