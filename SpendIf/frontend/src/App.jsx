@@ -421,56 +421,106 @@ function App() {
                 <input type="file" accept=".csv" onChange={handleFileUpload} style={{ display: "none" }} />
               </label>
 
-              <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap" }}>
-          <Card title="Total Balance" value={`$${latestBalance.toFixed(2)}`} subtitle={"Latest balance"} color="green" />
-          <Card title="Monthly Income" value={`$${monthlyIncome.toFixed(0)}`} subtitle="Total deposits" color="green" />
-          <Card title="Monthly Expenses" value={`$${monthlyExpenses.toFixed(0)}`} subtitle="Total withdrawals" color="red" />
-          <Card title="Flagged Transactions" value={uploadedData ? flaggedCount : 3} subtitle={uploadedData && flaggedCount === 0 ? "No flagged transactions / wrong file" : "Requires review"} color="orange" onClick={() => setShowFlagged(true)}
-        />
-            </div>
+              <div
+  style={{
+    display: "flex",
+    gap: "1rem",
+    flexWrap: "wrap",
+    justifyContent: "space-between", // optional: spread nicely
+  }}
+>
+  <Card
+    title="Total Balance"
+    value={`$${latestBalance.toFixed(2)}`}
+    subtitle={"Latest balance"}
+    color="green"
+    style={{ flex: "1 1 100%", maxWidth: "100%" }} // mobile-friendly
+  />
+  <Card
+    title="Monthly Income"
+    value={`$${monthlyIncome.toFixed(0)}`}
+    subtitle="Total deposits"
+    color="green"
+    style={{ flex: "1 1 100%", maxWidth: "100%" }}
+  />
+  <Card
+    title="Monthly Expenses"
+    value={`$${monthlyExpenses.toFixed(0)}`}
+    subtitle="Total withdrawals"
+    color="red"
+    style={{ flex: "1 1 100%", maxWidth: "100%" }}
+  />
+  <Card
+    title="Flagged Transactions"
+    value={uploadedData ? flaggedCount : 3}
+    subtitle={
+      uploadedData && flaggedCount === 0
+        ? "No flagged transactions / wrong file"
+        : "Requires review"
+    }
+    color="orange"
+    onClick={() => setShowFlagged(true)}
+    style={{ flex: "1 1 100%", maxWidth: "100%" }}
+  />
+</div>
 
 
-              <div style={{ display: "flex", gap: "1rem", marginTop: "2rem", flexWrap: "wrap" }}>
-                <div style={{ flex: 1, minWidth: "280px" }}>
-                  <h3>Monthly Spending Trend</h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <AreaChart data={spendingTrend}>
-                      <defs>
-                        <linearGradient id="income" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#10B981" stopOpacity={0.8} />
-                          <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
-                        </linearGradient>
-                        <linearGradient id="expenses" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="5%" stopColor="#EF4444" stopOpacity={0.8} />
-                          <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
-                        </linearGradient>
-                      </defs>
-                      <XAxis dataKey="month" />
-                      <YAxis />
-                      <CartesianGrid strokeDasharray="3 3" />
-                      <Tooltip />
-                      <Area type="monotone" dataKey="income" stroke="#10B981" fillOpacity={1} fill="url(#income)" />
-                      <Area type="monotone" dataKey="expenses" stroke="#EF4444" fillOpacity={1} fill="url(#expenses)" />
-                    </AreaChart>
-                  </ResponsiveContainer>
-                </div>
 
-                <div style={{ flex: 1, minWidth: "280px" }}>
-                  <h3>Spending by Category</h3>
-                  <ResponsiveContainer width="100%" height={300}>
-                    <PieChart>
-                      <Pie data={categoryData} dataKey="value" nameKey="name" cx="50%" cy="50%" outerRadius={80} label>
-                        {categoryData.map((entry, index) => (
-                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                        ))}
-                      </Pie>
-                      <Tooltip />
-                    </PieChart>
-                  </ResponsiveContainer>
-                </div>
-               
+              <div
+  style={{
+    display: "flex",
+    gap: "1rem",
+    marginTop: "2rem",
+    flexWrap: "wrap",
+  }}
+>
+  <div style={{ flex: "1 1 100%", minWidth: "280px" }}> {/* Full width on mobile */}
+    <h3>Monthly Spending Trend</h3>
+    <ResponsiveContainer width="100%" height={300}>
+      <AreaChart data={spendingTrend}>
+        <defs>
+          <linearGradient id="income" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#10B981" stopOpacity={0.8} />
+            <stop offset="95%" stopColor="#10B981" stopOpacity={0} />
+          </linearGradient>
+          <linearGradient id="expenses" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="5%" stopColor="#EF4444" stopOpacity={0.8} />
+            <stop offset="95%" stopColor="#EF4444" stopOpacity={0} />
+          </linearGradient>
+        </defs>
+        <XAxis dataKey="month" />
+        <YAxis />
+        <CartesianGrid strokeDasharray="3 3" />
+        <Tooltip />
+        <Area type="monotone" dataKey="income" stroke="#10B981" fillOpacity={1} fill="url(#income)" />
+        <Area type="monotone" dataKey="expenses" stroke="#EF4444" fillOpacity={1} fill="url(#expenses)" />
+      </AreaChart>
+    </ResponsiveContainer>
+  </div>
 
-              </div>
+  <div style={{ flex: "1 1 100%", minWidth: "280px" }}> {/* Full width on mobile */}
+    <h3>Spending by Category</h3>
+    <ResponsiveContainer width="100%" height={300}>
+      <PieChart>
+        <Pie
+          data={categoryData}
+          dataKey="value"
+          nameKey="name"
+          cx="50%"
+          cy="50%"
+          outerRadius={80}
+          label
+        >
+          {categoryData.map((entry, index) => (
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+          ))}
+        </Pie>
+        <Tooltip />
+      </PieChart>
+    </ResponsiveContainer>
+  </div>
+</div>
+
             </>
           )}
         </main>

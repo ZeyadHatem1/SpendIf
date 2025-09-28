@@ -25,9 +25,11 @@ a:hover {
 body {
   margin: 0;
   display: flex;
-  place-items: center;
+  flex-direction: column;
   min-width: 320px;
   min-height: 100vh;
+  width: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
 h1 {
@@ -67,18 +69,76 @@ button:focus-visible {
   }
 }
 
-/* --- ✅ Responsive Additions --- */
+
 @media (max-width: 768px) {
-  /* Reduce root padding when on smaller screens */
+  /* Root container */
   #root {
-    padding: 1rem;
+    padding: 0.5rem;
     max-width: 100%;
+    box-sizing: border-box;
   }
 
-  /* Make analytics card shrink and remove fixed height */
-  .analytics-card {
+  /* Page content: remove left margin from sidebar */
+  .page-content {
+    margin-left: 0 !important;
+    padding: 1rem;
+  }
+
+  /* Cards: Analytics & Dashboard */
+  .analytics-card,
+  .card {
     padding: 1rem !important;
     min-height: auto !important;
-    max-width: 100% !important;
+    width: 100% !important;
+    box-sizing: border-box;
+    margin-bottom: 1rem;
+  }
+
+  /* Dashboard/Charts container */
+  .dashboard-charts {
+    flex-direction: column !important;
+    gap: 1rem !important;
+  }
+
+  /* Navbar adjustments */
+  nav {
+    width: 100% !important;
+    height: auto !important;
+    position: relative !important;
+    border-right: none !important;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  nav ul {
+    flex-direction: row !important;
+    flex-wrap: wrap;
+    gap: 0.5rem !important;
+  }
+
+  .nav-item {
+    flex: 1 1 45% !important;
+    text-align: center;
+  }
+
+  /* Menu / close buttons */
+  button.menu-button,
+  button.close-button {
+    top: 1rem !important;
+    left: 1rem !important;
+    position: fixed !important;
+    z-index: 1000;
+  }
+
+  /* Reduce headings font-size */
+  h1 {
+    font-size: 2em !important;
+  }
+  h2 {
+    font-size: 1.5em !important;
+  }
+  h3 {
+    font-size: 1.2em !important;
   }
 }

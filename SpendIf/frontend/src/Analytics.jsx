@@ -50,28 +50,23 @@ const Analytics = ({ data }) => {
   return (
     <>
       <div
-        className="analytics-card"   
-        onClick={handleCardClick}
-        style={{
-          background: "#fff",
-          padding: "2rem",
-          borderRadius: "0.75rem",
-          boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
-          cursor: "pointer",
-          width: "100%",
-          transition: "all 0.2s ease-in-out",
-          transform: "scale(1)",
-          margin: "0 auto",
-        }}
-        onMouseEnter={(e) => {
-          e.currentTarget.style.transform = "scale(1.02)";
-          e.currentTarget.style.boxShadow = "0 6px 16px rgba(0,0,0,0.2)";
-        }}
-        onMouseLeave={(e) => {
-          e.currentTarget.style.transform = "scale(1)";
-          e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
-        }}
-      >
+  className="analytics-card"
+  onClick={handleCardClick}
+  style={{
+    background: "#fff",
+    padding: "2rem",
+    borderRadius: "0.75rem",
+    boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
+    cursor: "pointer",
+    width: "100%",
+    maxWidth: "100%",       
+    boxSizing: "border-box", 
+    transition: "all 0.2s ease-in-out",
+    transform: "scale(1)",
+    margin: "0 auto",
+  }}
+>
+
         <h2 style={{ marginBottom: "1.5rem", fontSize: "2rem" }}>
           Recent Transactions
         </h2>
