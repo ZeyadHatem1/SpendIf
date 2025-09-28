@@ -6,7 +6,6 @@ import {
   FiX,
   FiHome,
   FiTrendingUp,
-  FiShield,
   FiBarChart2,
 } from "react-icons/fi";
 import {
@@ -23,6 +22,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import "./index.css"; 
 import UploadSection from "./UploadSection";
 import Analytics from "./Analytics";
 import Statistics from "./Statistics";  
@@ -406,7 +406,7 @@ function App() {
         </>
       )}
 
-      <div style={styles.pageContent}>
+      <div className="page-content" style={styles.pageContent}>
         <main style={styles.main}>
           <h1>{activeTab}</h1>
 
@@ -431,7 +431,7 @@ function App() {
 
 
               <div style={{ display: "flex", gap: "1rem", marginTop: "2rem", flexWrap: "wrap" }}>
-                <div style={{ flex: 1, minWidth: "400px" }}>
+                <div style={{ flex: 1, minWidth: "280px" }}>
                   <h3>Monthly Spending Trend</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <AreaChart data={spendingTrend}>
@@ -455,7 +455,7 @@ function App() {
                   </ResponsiveContainer>
                 </div>
 
-                <div style={{ flex: 1, minWidth: "400px" }}>
+                <div style={{ flex: 1, minWidth: "280px" }}>
                   <h3>Spending by Category</h3>
                   <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
@@ -513,7 +513,7 @@ function Card({ title, value, subtitle, color, onClick }) {
         padding: "1rem",
         borderRadius: "0.5rem",
         flex: 1,
-        minWidth: "220px",
+        minWidth: "280px",
         boxShadow: hover
           ? "0 4px 12px rgba(0, 0, 0, 0.1)"
           : "0 1px 2px rgba(0,0,0,0.1)",

@@ -58,8 +58,6 @@ const Analytics = ({ data }) => {
           borderRadius: "0.75rem",
           boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
           cursor: "pointer",
-          maxWidth: "1200px",
-          minHeight: "500px",
           width: "100%",
           transition: "all 0.2s ease-in-out",
           transform: "scale(1)",

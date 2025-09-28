@@ -3,7 +3,7 @@ import { FiUpload } from "react-icons/fi";
 
 const UploadSection = ({ handleFileUpload }) => {
   return (
-    <div style={styles.container}>
+    <div className="page-content" style={styles.pageContent}>
     className="upload-container" style={styles.container}
 
       <HoverCard>
