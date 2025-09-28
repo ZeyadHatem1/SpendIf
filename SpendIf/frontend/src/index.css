@@ -78,7 +78,7 @@ button:focus-visible {
     box-sizing: border-box;
   }
 
-  /* Page content: remove left margin from sidebar */
+  
   .page-content {
     margin-left: 0 !important;
     padding: 1rem;

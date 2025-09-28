@@ -590,8 +590,7 @@ const styles = {
   activeNavItem: { backgroundColor: "#0369A1", color: "#ffffff" },
   hoveredNavItem: { backgroundColor: "#f0f0f0" },
   icon: { fontSize: "1.2rem" },
-  pageContent: { marginLeft: "220px", flexGrow: 1, display: "flex", flexDirection: "column" },
-  main: { flex: 1, padding: "2rem" },
+  pageContent: { flexGrow: 1, display: "flex", flexDirection: "column", width: "100%" },  main: { flex: 1, padding: "2rem" },
   footer: { textAlign: "center" },
   uploadBtn: { display: "inline-flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#0284C7", color: "#fff", padding: "0.5rem 1rem", borderRadius: "0.375rem", cursor: "pointer", marginBottom: "1.5rem" },
 };
