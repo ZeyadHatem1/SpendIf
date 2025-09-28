@@ -66,3 +66,19 @@ button:focus-visible {
     background-color: #e7e7e7;
   }
 }
+
+/* --- ✅ Responsive Additions --- */
+@media (max-width: 768px) {
+  /* Reduce root padding when on smaller screens */
+  #root {
+    padding: 1rem;
+    max-width: 100%;
+  }
+
+  /* Make analytics card shrink and remove fixed height */
+  .analytics-card {
+    padding: 1rem !important;
+    min-height: auto !important;
+    max-width: 100% !important;
+  }
+}

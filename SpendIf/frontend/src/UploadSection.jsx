@@ -4,6 +4,8 @@ import { FiUpload } from "react-icons/fi";
 const UploadSection = ({ handleFileUpload }) => {
   return (
     <div style={styles.container}>
+    className="upload-container" style={styles.container}
+
       <HoverCard>
         <h2 style={styles.title}>Upload CSV File</h2>
         <p style={styles.subtitle}>

@@ -20,7 +20,6 @@ const Analytics = ({ data }) => {
     }
   };
 
-  // Initial check and listen for logout across tabs
   useEffect(() => {
     updateLoginState();
 
@@ -31,7 +30,6 @@ const Analytics = ({ data }) => {
     };
 
     window.addEventListener("storage", handleStorageChange);
-
     return () => window.removeEventListener("storage", handleStorageChange);
   }, [data]);
 
@@ -52,6 +50,7 @@ const Analytics = ({ data }) => {
   return (
     <>
       <div
+        className="analytics-card"   
         onClick={handleCardClick}
         style={{
           background: "#fff",
@@ -75,25 +74,42 @@ const Analytics = ({ data }) => {
           e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.15)";
         }}
       >
-        <h2 style={{ marginBottom: "1.5rem", fontSize: "2rem" }}>Recent Transactions</h2>
+        <h2 style={{ marginBottom: "1.5rem", fontSize: "2rem" }}>
+          Recent Transactions
+        </h2>
 
         {isLoggedIn ? (
           showTransactions ? (
             recentTransactions.length === 0 ? (
-              <p style={{ color: "#6B7280", fontSize: "1.2rem" }}>No previous transactions</p>
+              <p style={{ color: "#6B7280", fontSize: "1.2rem" }}>
+                No previous transactions
+              </p>
             ) : (
               <ul style={{ listStyle: "none", padding: 0 }}>
                 {recentTransactions.map((t, index) => (
                   <li
                     key={index}
                     style={{
-                      borderBottom: index < recentTransactions.length - 1 ? "1px solid #eee" : "none",
+                      borderBottom:
+                        index < recentTransactions.length - 1
+                          ? "1px solid #eee"
+                          : "none",
                       padding: "1rem 0",
                     }}
                   >
-                    <div style={{ fontWeight: 600, fontSize: "1.2rem" }}>{t.description}</div>
-                    <div style={{ fontSize: "1rem", color: "#6B7280", marginTop: "0.25rem" }}>
-                      {t.date} — ${t.deposit ? `+${t.deposit}` : `-${t.withdrawal}`} | Balance: ${t.balance}
+                    <div style={{ fontWeight: 600, fontSize: "1.2rem" }}>
+                      {t.description}
+                    </div>
+                    <div
+                      style={{
+                        fontSize: "1rem",
+                        color: "#6B7280",
+                        marginTop: "0.25rem",
+                      }}
+                    >
+                      {t.date} — $
+                      {t.deposit ? `+${t.deposit}` : `-${t.withdrawal}`} | Balance: $
+                      {t.balance}
                     </div>
                   </li>
                 ))}
