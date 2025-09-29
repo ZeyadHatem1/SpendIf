@@ -4,45 +4,47 @@ import { FiUpload } from "react-icons/fi";
 const UploadSection = ({ handleFileUpload }) => {
   return (
     <div className="page-content" style={styles.pageContent}>
-    className="upload-container" style={styles.container}
+      <div className="upload-container" style={styles.container}>
 
-      <HoverCard>
-        <h2 style={styles.title}>Upload CSV File</h2>
-        <p style={styles.subtitle}>
-          Drag and drop your CSV file or click to select.
-        </p>
-        <label htmlFor="file-upload" style={styles.uploadBox}>
-          <div style={styles.uploadIcon}><FiUpload size={32} /></div>
-          <p>
-            Drop your CSV file here<br />
-            <small>or click to browse files</small>
+        <HoverCard>
+          <h2 style={styles.title}>Upload CSV File</h2>
+          <p style={styles.subtitle}>
+            Drag and drop your CSV file or click to select.
           </p>
-          <input
-            id="file-upload"
-            type="file"
-            accept=".csv"
-            onChange={handleFileUpload}
-            style={{ display: "none" }}
-          />
-        </label>
-      </HoverCard>
+          <label htmlFor="file-upload" style={styles.uploadBox}>
+            <div style={styles.uploadIcon}><FiUpload size={32} /></div>
+            <p>
+              Drop your CSV file here<br />
+              <small>or click to browse files</small>
+            </p>
+            <input
+              id="file-upload"
+              type="file"
+              accept=".csv"
+              onChange={handleFileUpload}
+              style={{ display: "none" }}
+            />
+          </label>
+        </HoverCard>
 
-      <HoverCard>
-        <h2 style={styles.title}>CSV Format Guide</h2>
-        <p style={styles.subtitle}>Follow this format for successful imports</p>
-        <div style={styles.tags}>
-          {["date", "description", "deposit", "withdrawal", "balance"].map((tag) => (
-            <span key={tag} style={styles.tag}>{tag}</span>
-          ))}
-        </div>
-        <ul style={styles.requirements}>
-          <li><b>date:</b> YYYY-MM-DD format</li>
-          <li><b>description:</b> Description of transaction</li>
-          <li><b>Deposits:</b> Amount</li>
-          <li><b>Withdrawals:</b> Amount</li>
-          <li><b>Balance:</b> Amount</li>
-        </ul>
-      </HoverCard>
+        <HoverCard>
+          <h2 style={styles.title}>CSV Format Guide</h2>
+          <p style={styles.subtitle}>Follow this format for successful imports</p>
+          <div style={styles.tags}>
+            {["date", "description", "deposit", "withdrawal", "balance"].map((tag) => (
+              <span key={tag} style={styles.tag}>{tag}</span>
+            ))}
+          </div>
+          <ul style={styles.requirements}>
+            <li><b>date:</b> YYYY-MM-DD format</li>
+            <li><b>description:</b> Description of transaction</li>
+            <li><b>Deposits:</b> Amount</li>
+            <li><b>Withdrawals:</b> Amount</li>
+            <li><b>Balance:</b> Amount</li>
+          </ul>
+        </HoverCard>
+
+      </div>
     </div>
   );
 };
@@ -69,51 +71,52 @@ const HoverCard = ({ children }) => {
 };
 
 const styles = {
+  pageContent: {}, // added so the style reference is valid
   container: {
-  display: "flex",
-  flexDirection: "row",  
-  gap: "2rem",
-  marginBottom: "2rem",
-  justifyContent: "center",
-  alignItems: "stretch",
-  maxWidth: "1200px",
-  marginLeft: "auto",
-  marginRight: "auto",
-  flexWrap: "wrap",  
-},
+    display: "flex",
+    flexDirection: "row",  
+    gap: "2rem",
+    marginBottom: "2rem",
+    justifyContent: "center",
+    alignItems: "stretch",
+    maxWidth: "1200px",
+    marginLeft: "auto",
+    marginRight: "auto",
+    flexWrap: "wrap",  
+  },
   card: {
-  backgroundColor: "#fff",
-  borderRadius: "0.5rem",
-  padding: "1.5rem",
-  boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-  flex: "1 1 300px",  // allow shrinking below 50%
-  minWidth: "280px",  // mobile-friendly
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between",
-  transition: "all 0.2s ease-in-out",
-  boxSizing: "border-box",
-},
+    backgroundColor: "#fff",
+    borderRadius: "0.5rem",
+    padding: "1.5rem",
+    boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
+    flex: "1 1 300px",  // allow shrinking below 50%
+    minWidth: "280px",  // mobile-friendly
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "space-between",
+    transition: "all 0.2s ease-in-out",
+    boxSizing: "border-box",
+  },
   title: {
     fontSize: "1.25rem",
     fontWeight: 600,
     marginBottom: "0.5rem",
   },
   subtitle: {
-    color: "#6B7280",
+    color: "#000",
     marginBottom: "1rem",
   },
   uploadBox: {
-  border: "3px dashed #3B82F6",
-  borderRadius: "0.75rem",
-  padding: "2rem",
-  textAlign: "center",
-  cursor: "pointer",
-  color: "#3B82F6",
-  boxSizing: "border-box",
-  width: "100%",      
-  maxWidth: "100%",   
-},
+    border: "3px dashed #3B82F6",
+    borderRadius: "0.75rem",
+    padding: "2rem",
+    textAlign: "center",
+    cursor: "pointer",
+    color: "#3B82F6",
+    boxSizing: "border-box",
+    width: "100%",      
+    maxWidth: "100%",   
+  },
   uploadIcon: {
     marginBottom: "0.5rem",
   },

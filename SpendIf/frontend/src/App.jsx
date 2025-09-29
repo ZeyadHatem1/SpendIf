@@ -581,16 +581,15 @@ function Card({ title, value, subtitle, color, onClick }) {
 
 
 const styles = {
-  wrapper: { display: "flex", minHeight: "100vh", fontFamily: "sans-serif" },
+  wrapper: { display: "flex", minHeight: "100vh", fontFamily: "sans-serif", position:"relative" },
   menuButton: { position: "fixed", top: "1rem", left: "1rem", background: "none", border: "none", cursor: "pointer", zIndex: 1000, color: "black" },
   closeButton: { position: "fixed", top: "1rem", left: "210px", background: "none", border: "none", cursor: "pointer", zIndex: 1000, color: "black" },
-  navbar: { backgroundColor: "#ffffff", padding: "1rem 0.5rem", width: "200px", height: "100vh", position: "fixed", top: 0, left: 0, display: "flex", flexDirection: "column", borderRight: "1px solid #eee", zIndex: 999 },
-  navList: { listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem" },
+  navbar: {backgroundColor: "#e5e7eb", padding: "1rem 0.5rem", width: "200px", height: "100vh", position: "fixed", top: 0, left: 0, display: "flex", flexDirection: "column", borderRight: "1px solid #ddd", zIndex: 999,},  navList: { listStyle: "none", padding: 0, margin: 0, display: "flex", flexDirection: "column", gap: "0.5rem" },
   navItem: { display: "flex", alignItems: "center", gap: "0.75rem", padding: "0.75rem 1rem", borderRadius: "0.5rem", cursor: "pointer", color: "#4B5563", fontWeight: 500, transition: "background-color 0.2s ease" },
   activeNavItem: { backgroundColor: "#0369A1", color: "#ffffff" },
   hoveredNavItem: { backgroundColor: "#f0f0f0" },
   icon: { fontSize: "1.2rem" },
-  pageContent: { flexGrow: 1, display: "flex", flexDirection: "column", width: "100%" },  main: { flex: 1, padding: "2rem" },
+  pageContent: { flexGrow: 1, display: "flex", flexDirection: "column", width: "100%", paddingLeft:"0"},  main: { flex: 1, padding: "2rem" },
   footer: { textAlign: "center" },
   uploadBtn: { display: "inline-flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#0284C7", color: "#fff", padding: "0.5rem 1rem", borderRadius: "0.375rem", cursor: "pointer", marginBottom: "1.5rem" },
 };

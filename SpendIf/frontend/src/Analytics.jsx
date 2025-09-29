@@ -74,7 +74,7 @@ const Analytics = ({ data }) => {
         {isLoggedIn ? (
           showTransactions ? (
             recentTransactions.length === 0 ? (
-              <p style={{ color: "#6B7280", fontSize: "1.2rem" }}>
+              <p style={{ color: "#000", fontSize: "1.2rem" }}>
                 No previous transactions
               </p>
             ) : (
@@ -96,7 +96,7 @@ const Analytics = ({ data }) => {
                     <div
                       style={{
                         fontSize: "1rem",
-                        color: "#6B7280",
+                        color: "#000",
                         marginTop: "0.25rem",
                       }}
                     >

@@ -170,7 +170,7 @@ const styles = {
     marginBottom: "0.75rem",
   },
   text: {
-    color: "#374151",
+    color: "#000",
     fontSize: "0.95rem",
     marginBottom: "0.5rem",
     textAlign: "justify",
