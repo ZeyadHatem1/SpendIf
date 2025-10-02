@@ -19,11 +19,11 @@ public class TransactionController {
 
     @PostMapping("/{userId}")
     public Transaction addTransaction(@PathVariable Long userId, @RequestBody Transaction tx) {
-        // In real app: fetch user from DB
+        // Fetches user from DB
         User dummyUser = new User();
         dummyUser.setId(userId);
         dummyUser.setHomeCountry("UAE"); // example
-        dummyUser.setAverageTransactionAmount(200); // example
+        dummyUser.setAverageTransactionAmount(200); 
         dummyUser.setDormant(false);
 
         return transactionService.addTransaction(tx, dummyUser);

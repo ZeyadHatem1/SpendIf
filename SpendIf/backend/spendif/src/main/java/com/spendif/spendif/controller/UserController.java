@@ -8,7 +8,6 @@ import org.springframework.web.server.ResponseStatusException;
 
 @RestController
 @RequestMapping("/api/auth")
-// ✅ Allow both local dev and production frontend
 @CrossOrigin(origins = {
     "http://localhost:3000",
     "https://spendif.up.railway.app"
@@ -21,7 +20,6 @@ public class UserController {
         this.userService = userService;
     }
 
-    // DTO to avoid sending password
     public static class UserResponse {
         private Long id;
         private String username;
@@ -38,7 +36,7 @@ public class UserController {
         public String getEmail() { return email; }
     }
 
-    // ✅ Signup endpoint
+    
     @PostMapping("/signup")
     public UserResponse signup(@RequestBody User user) {
         try {
@@ -49,7 +47,7 @@ public class UserController {
         }
     }
 
-    // ✅ Login endpoint
+    
     @PostMapping("/login")
     public UserResponse login(@RequestBody User user) {
         try {

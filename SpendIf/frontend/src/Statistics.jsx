@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 
-// HoverCard with hover effect (same as Upload page)
 const HoverCard = ({ children }) => {
   const [hover, setHover] = useState(false);
 
@@ -20,9 +19,8 @@ const HoverCard = ({ children }) => {
     </div>
   );
 };
-
+// Demo data for display
 const Statistics = ({ data }) => {
-  // Sample fallback data
   const sampleData = [
     {
       date: "2025-07-01",
@@ -49,7 +47,7 @@ const Statistics = ({ data }) => {
 
   const dataset = data && data.length > 0 ? data : sampleData;
 
-  // Totals
+  
   const totalBalance =
     dataset.length > 0 ? parseFloat(dataset[dataset.length - 1].balance) : 0;
   const totalIncome = dataset.reduce(
@@ -61,7 +59,6 @@ const Statistics = ({ data }) => {
     0
   );
 
-  // Category breakdown
   const categorySums = { Food: 0, Entertainment: 0, Extras: 0 };
   dataset.forEach((t) => {
     const desc = t.description?.toLowerCase() || "";
@@ -75,7 +72,6 @@ const Statistics = ({ data }) => {
     }
   });
 
-  // Last month name (only if dataset exists)
   const lastDate = dataset.length > 0 ? new Date(dataset[dataset.length - 1].date) : null;
   const monthName = lastDate
     ? lastDate.toLocaleString("default", { month: "long" })
@@ -83,7 +79,7 @@ const Statistics = ({ data }) => {
 
   return (
     <div style={styles.container}>
-      {/* Summary Card */}
+      {}
       <HoverCard>
         <h2 style={styles.title}>Summary</h2>
         <p style={styles.text}>
@@ -100,7 +96,7 @@ const Statistics = ({ data }) => {
         </p>
       </HoverCard>
 
-      {/* Expense Breakdown Card */}
+      {}
       <HoverCard>
         <h2 style={styles.title}>Expense Breakdown</h2>
 
@@ -109,26 +105,26 @@ const Statistics = ({ data }) => {
             {Object.entries(categorySums).map(
               ([cat, value]) =>
                 value > 0 && (
-                  <div key={cat} style={{ marginBottom: "1rem" }}>
-                    <p style={styles.text}>
-                      You spent{" "}
-                      <strong style={{ color: "#000" }}>
-                        ${value.toFixed(2)}
-                      </strong>{" "}
-                      on <strong style={{ color: "#000" }}>{cat}</strong>{" "}
-                      during <strong style={{ color: "#000" }}>{monthName}</strong>.
-                    </p>
-                    <p style={{ ...styles.text, fontStyle: "italic", color: "#6b7280" }}>
-                      💡 Try reducing your spending on {cat.toLowerCase()} to save more.
-                    </p>
-                  </div>
+            <div key={cat} style={{ marginBottom: "1rem" }}>
+            <p style={styles.text}>
+                You spent{" "}
+            <strong style={{ color: "#000" }}>
+                ${value.toFixed(2)}
+            </strong>{" "}
+                on <strong style={{ color: "#000" }}>{cat}</strong>{" "}
+                during <strong style={{ color: "#000" }}>{monthName}</strong>.
+            </p>
+            <p style={{ ...styles.text, fontStyle: "italic", color: "#6b7280" }}>
+                💡 Try reducing your spending on {cat.toLowerCase()} to save more.
+            </p>
+            </div>
                 )
             )}
           </div>
         ) : (
-          <p style={{ ...styles.text, textAlign: "center", marginTop: "2rem" }}>
-            Upload a file first!
-          </p>
+        <p style={{ ...styles.text, textAlign: "center", marginTop: "2rem" }}>
+          Upload a file first!
+        </p>
         )}
       </HoverCard>
     </div>
@@ -155,14 +151,14 @@ const styles = {
   borderRadius: "0.5rem",
   padding: "1.5rem",
   boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-  flex: "1 1 300px", // allow shrinking below 400px
-  minWidth: "280px",  // mobile-friendly
+  flex: "1 1 300px", 
+  minWidth: "280px",  
   display: "flex",
   flexDirection: "column",
   alignItems: "flex-start", 
   justifyContent: "flex-start", 
   transition: "all 0.2s ease-in-out",
-  minHeight: "auto", // allow shorter cards on mobile
+  minHeight: "auto", 
 },
   title: {
     fontSize: "1.25rem",

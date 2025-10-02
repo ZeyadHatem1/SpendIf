@@ -8,15 +8,15 @@ const Analytics = ({ data }) => {
   const [showTransactions, setShowTransactions] = useState(false);
 
   const updateLoginState = () => {
-    const token = localStorage.getItem("token");
-    const loggedIn = !!token;
+  const token = localStorage.getItem("token");
+  const loggedIn = !!token;
     setIsLoggedIn(loggedIn);
 
     if (loggedIn) {
       setRecentTransactions(data.slice(-3).reverse());
     } else {
       setRecentTransactions([]);
-      setShowTransactions(false); // Hide transactions immediately on logout
+      setShowTransactions(false); 
     }
   };
 
@@ -73,57 +73,57 @@ const Analytics = ({ data }) => {
 
         {isLoggedIn ? (
           showTransactions ? (
-            recentTransactions.length === 0 ? (
-              <p style={{ color: "#000", fontSize: "1.2rem" }}>
+          recentTransactions.length === 0 ? (
+            <p style={{ color: "#000", fontSize: "1.2rem" }}>
                 No previous transactions
-              </p>
+            </p>
             ) : (
-              <ul style={{ listStyle: "none", padding: 0 }}>
-                {recentTransactions.map((t, index) => (
-                  <li
-                    key={index}
-                    style={{
-                      borderBottom:
-                        index < recentTransactions.length - 1
-                          ? "1px solid #eee"
-                          : "none",
-                      padding: "1rem 0",
-                    }}
+          <ul style={{ listStyle: "none", padding: 0 }}>
+            {recentTransactions.map((t, index) => (
+              <li
+                  key={index}
+                  style={{
+                  borderBottom:
+                  index < recentTransactions.length - 1
+                  ? "1px solid #eee"
+                  : "none",
+                  padding: "1rem 0",
+                  }}
                   >
-                    <div style={{ fontWeight: 600, fontSize: "1.2rem" }}>
-                      {t.description}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "1rem",
-                        color: "#000",
-                        marginTop: "0.25rem",
-                      }}
+            <div style={{ fontWeight: 600, fontSize: "1.2rem" }}>
+                {t.description}
+                </div>
+                <div
+                style={{
+                    fontSize: "1rem",
+                    color: "#000",
+                    marginTop: "0.25rem",
+                    }}
                     >
-                      {t.date} — $
-                      {t.deposit ? `+${t.deposit}` : `-${t.withdrawal}`} | Balance: $
-                      {t.balance}
-                    </div>
-                  </li>
+                  {t.date} — $
+                  {t.deposit ? `+${t.deposit}` : `-${t.withdrawal}`} | Balance: $
+                  {t.balance}
+                </div>
+                </li>
                 ))}
               </ul>
             )
           ) : (
-            <p style={{ fontSize: "1rem", color: "#9CA3AF", marginTop: "1.5rem" }}>
-              Click to view your last 3 uploaded transactions.
-            </p>
+          <p style={{ fontSize: "1rem", color: "#9CA3AF", marginTop: "1.5rem" }}>
+            Click to view your last 3 uploaded transactions.
+          </p>
           )
         ) : (
           <p style={{ fontSize: "1rem", color: "#9CA3AF", marginTop: "1.5rem" }}>
-            Click to login and view your last 3 uploaded transactions.
+           Click to login and view your last 3 uploaded transactions.
           </p>
         )}
       </div>
 
       {showAuth && (
         <Authentication
-          onClose={() => setShowAuth(false)}
-          onAuthSuccess={handleAuthSuccess}
+        onClose={() => setShowAuth(false)}
+        onAuthSuccess={handleAuthSuccess}
         />
       )}
     </>

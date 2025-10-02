@@ -7,16 +7,14 @@ export default function FlaggedTransactions({ data, onClose, onCountUpdate }) {
     let flaggedTx = [];
 
     if (!data || data.length === 0) {
-      // Demo data for modal only
+      // Demo data for display
       flaggedTx = [
         { id: 1, date: "2025-01-05", amount: 5000, merchant: "MegaMart", flagged: true, flagReason: "Unusually high purchase" },
         { id: 2, date: "2025-02-12", amount: 300, merchant: "OnlineShop", flagged: true, flagReason: "Multiple small transactions in short period" },
         { id: 3, date: "2025-03-10", amount: 1500, merchant: "ElectroStore", flagged: true, flagReason: "Suspicious merchant" },
       ];
-      // Only update card count if no real data uploaded
       onCountUpdate && onCountUpdate(flaggedTx.length);
     } else {
-      // Apply fraud rules to real data
       flaggedTx = data
         .filter(tx => (tx.withdrawal && tx.withdrawal > 1000) || (tx.deposit && tx.deposit > 2000))
         .map((tx, idx) => ({
@@ -31,7 +29,6 @@ export default function FlaggedTransactions({ data, onClose, onCountUpdate }) {
             "Suspicious transaction",
         }));
 
-      // Update card count immediately with real data
       onCountUpdate && onCountUpdate(flaggedTx.length);
     }
 
@@ -55,18 +52,18 @@ export default function FlaggedTransactions({ data, onClose, onCountUpdate }) {
                   <th style={thStyle}>Merchant</th>
                   <th style={thStyle}>Reason</th>
                 </tr>
-              </thead>
-              <tbody>
+        </thead>
+        <tbody>
                 {flagged.map((tx) => (
                   <tr key={tx.id}>
-                    <td style={tdStyle}>{tx.date}</td>
-                    <td style={tdStyle}>${tx.amount.toFixed(2)}</td>
-                    <td style={tdStyle}>{tx.merchant}</td>
-                    <td style={{ ...tdStyle, color: "#F59E0B" }}>{tx.flagReason}</td>
+                  <td style={tdStyle}>{tx.date}</td>
+                  <td style={tdStyle}>${tx.amount.toFixed(2)}</td>
+                  <td style={tdStyle}>{tx.merchant}</td>
+                  <td style={{ ...tdStyle, color: "#F59E0B" }}>{tx.flagReason}</td>
                   </tr>
                 ))}
-              </tbody>
-            </table>
+          </tbody>
+          </table>
           </div>
         )}
 

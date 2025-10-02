@@ -14,7 +14,6 @@ export default function Authentication({ onClose, onAuthSuccess }) {
     setLoading(true);
     setError("");
 
-    // Conditional values based on login/signup
     let username = "";
     let email = "";
     let password = "";
@@ -39,7 +38,6 @@ export default function Authentication({ onClose, onAuthSuccess }) {
         ? { email, password }
         : { username, email, password };
 
-      // ✅ Updated fetch URL to use dynamic base
       const response = await fetch(
         `${API_BASE}/api/auth/${isLogin ? "login" : "signup"}`,
         {
@@ -55,7 +53,6 @@ export default function Authentication({ onClose, onAuthSuccess }) {
         throw new Error(data.error || "Authentication failed");
       }
 
-      // Store token (for now using email; replace with JWT later)
       localStorage.setItem("token", data.email);
 
       onAuthSuccess();

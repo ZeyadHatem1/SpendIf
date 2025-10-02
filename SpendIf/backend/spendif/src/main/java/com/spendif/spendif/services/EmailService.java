@@ -11,7 +11,7 @@ public class EmailService {
     private final JavaMailSender mailSender;
     private final String fromEmail = "noreply@spendif.com";
 
-    // ✅ Use environment variable so it works locally & on Railway
+    
     @Value("${APP_BASE_URL:https://spendif.up.railway.app}")
     private String appBaseUrl;
 

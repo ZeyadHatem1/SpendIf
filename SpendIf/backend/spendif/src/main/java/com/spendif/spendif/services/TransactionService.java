@@ -19,7 +19,7 @@ public class TransactionService {
     public Transaction addTransaction(Transaction tx, User user) {
         tx.setUser(user);
 
-        // Run fraud checks
+        
         String reason = FraudChecker.check(tx, user);
         if (reason != null) {
             tx.setFlagged(true);

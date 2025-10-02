@@ -15,15 +15,15 @@ public class User {
     private String username;
 
     @Column(nullable = false, unique = true) 
-    private String email; // new field
+    private String email; 
 
     @Column(nullable = false)
     private String password;
 
     @Column
-    private boolean verified = false; // new field
+    private boolean verified = false; 
 
-    // Fraud detection fields
+    // Fraud detection
     @Column
     private String homeCountry;
 
@@ -36,7 +36,6 @@ public class User {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<Transaction> transactions;
 
-    // Constructors
     public User() {}
     public User(String username, String email, String password) {
         this.username = username;
@@ -44,7 +43,6 @@ public class User {
         this.password = password;
     }
 
-    // Getters & Setters
     public Long getId() { return id; }
 
     public String getUsername() { return username; }

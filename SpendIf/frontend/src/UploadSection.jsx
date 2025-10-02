@@ -49,7 +49,6 @@ const UploadSection = ({ handleFileUpload }) => {
   );
 };
 
-// Card wrapper with hover effect
 const HoverCard = ({ children }) => {
   const [hover, setHover] = useState(false);
 
@@ -71,7 +70,7 @@ const HoverCard = ({ children }) => {
 };
 
 const styles = {
-  pageContent: {}, // added so the style reference is valid
+  pageContent: {}, 
   container: {
     display: "flex",
     flexDirection: "row",  
@@ -89,8 +88,8 @@ const styles = {
     borderRadius: "0.5rem",
     padding: "1.5rem",
     boxShadow: "0 1px 3px rgba(0,0,0,0.1)",
-    flex: "1 1 300px",  // allow shrinking below 50%
-    minWidth: "280px",  // mobile-friendly
+    flex: "1 1 300px",  
+    minWidth: "280px",  
     display: "flex",
     flexDirection: "column",
     justifyContent: "space-between",

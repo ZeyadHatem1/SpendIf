@@ -27,7 +27,6 @@ public class VerificationToken {
         this.expiryDate = expiryDate;
     }
 
-    // getters & setters
     public String getToken() { return token; }
     public User getUser() { return user; }
     public LocalDateTime getExpiryDate() { return expiryDate; }

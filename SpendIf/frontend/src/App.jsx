@@ -257,7 +257,7 @@ function App() {
   const balance = balanceIdx !== -1 ? parseNumber(get(balanceIdx)) : parseNumber(get(cols.length - 1)); 
   const category = descIdx !== -1 ? get(descIdx) : (looksLikeOldFormat ? get(5) : "Uncategorized");
 
-  // ---------------- Fraud rules ----------------
+  // Fraud rules 
   let flagged = false;
   let flagReason = "";
 
@@ -304,7 +304,6 @@ function App() {
   const monthlyIncome = data.reduce((acc, t) => acc + t.deposit, 0);
   const monthlyExpenses = data.reduce((acc, t) => acc + t.withdrawal, 0);
 
-  // ✅ Categorize into Food, Entertainment, and Other
   const categoryTotals = { Food: 0, Entertainment: 0, Other: 0 };
   data.forEach(({ category, withdrawal }) => {
     if (!withdrawal) return;
@@ -426,7 +425,7 @@ function App() {
     display: "flex",
     gap: "1rem",
     flexWrap: "wrap",
-    justifyContent: "space-between", // optional: spread nicely
+    justifyContent: "space-between", 
   }}
 >
   <Card
@@ -434,7 +433,7 @@ function App() {
     value={`$${latestBalance.toFixed(2)}`}
     subtitle={"Latest balance"}
     color="green"
-    style={{ flex: "1 1 100%", maxWidth: "100%" }} // mobile-friendly
+    style={{ flex: "1 1 100%", maxWidth: "100%" }} 
   />
   <Card
     title="Monthly Income"
@@ -474,7 +473,7 @@ function App() {
     flexWrap: "wrap",
   }}
 >
-  <div style={{ flex: "1 1 100%", minWidth: "280px" }}> {/* Full width on mobile */}
+  <div style={{ flex: "1 1 100%", minWidth: "280px" }}> {}
     <h3>Monthly Spending Trend</h3>
     <ResponsiveContainer width="100%" height={300}>
       <AreaChart data={spendingTrend}>
@@ -498,7 +497,7 @@ function App() {
     </ResponsiveContainer>
   </div>
 
-  <div style={{ flex: "1 1 100%", minWidth: "280px" }}> {/* Full width on mobile */}
+  <div style={{ flex: "1 1 100%", minWidth: "280px" }}> {}
     <h3>Spending by Category</h3>
     <ResponsiveContainer width="100%" height={300}>
       <PieChart>
@@ -530,13 +529,13 @@ function App() {
         </footer>
       </div>
        {showAuth && (
-               <Authentication
-               onClose={() => setShowAuth(false)}
-              onAuthSuccess={() => {
-                setIsAuthenticated(true);
-              setShowAuth(false);
+        <Authentication
+        onClose={() => setShowAuth(false)}
+        onAuthSuccess={() => {
+        setIsAuthenticated(true);
+        setShowAuth(false);
             }}
-          />
+      />
       )}
        {showFlagged && (
         <FlaggedTransactions
