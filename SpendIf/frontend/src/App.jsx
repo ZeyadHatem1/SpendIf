@@ -61,14 +61,14 @@ function App() {
   const [flaggedCount, setFlaggedCount] = useState(0);
 
 
-/*
+
   useEffect(() => {
     fetch(`${API_BASE}/api/hello`)
       .then((res) => res.text())
       .then((msg) => setBackendMessage(msg))
       .catch((err) => console.error("Error connecting to backend:", err));
   }, []);
-  */
+  
   const parseCSV = (text) => {
     
     const rows = [];
